@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Règlement IA — Outil de conformité &amp; contrôle interne</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+  :root{
+    --bg:#F4F4F4;
+    --bg-soft:#FFFFFF;
+    --panel:#FFFFFF;
+    --panel-soft:#F6F7F8;
+    --ink:#2C3446;
+    --ink-2:#39506C;
+    --muted:#7C8492;
+    --line:#E7E6E6;
+    --line-2:#F0F0F0;
+    --primary:#39506C;
+    --primary-dk:#2C3446;
+    /* accent de marque (corail Auria) — conserve les noms --gold* pour compat. interne */
+    --gold:#DC8056;
+    --gold-dk:#B85F38;
+    --gold-soft:#FBEDE4;
+    --accent:#DC8056;
+    --accent-soft:#E29A79;
+    --blue-soft:#AEC2D8;
+    /* niveaux de risque (harmonisés avec la charte) */
+    --red:#B0382B;     --red-bg:#F6E2DE;
+    --orange:#CC6B33;  --orange-bg:#F8E6D7;
+    --blue:#39506C;    --blue-bg:#E7EDF4;
+    --green:#5C8A55;   --green-bg:#E7F0E4;
+    --violet:#6E5B8F;  --violet-bg:#ECE7F3;
+    --radius:12px;
+    --shadow:0 1px 2px rgba(44,52,70,.05), 0 10px 28px rgba(44,52,70,.06);
+    --sans:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    --serif:"Cormorant Garamond","Georgia","Cambria","Times New Roman",serif;
+    --display:"Cormorant Garamond","Georgia",serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:var(--sans);
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.55;
+    font-size:15px;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--ink-2)}
+
+  /* ---------- Layout ---------- */
+  .app{display:flex;min-height:100vh}
+  .sidebar{
+    width:248px;flex:0 0 248px;
+    background:var(--bg-soft);
+    border-right:1px solid var(--line);
+    padding:22px 18px;
+    position:sticky;top:0;height:100vh;
+    overflow-y:auto;
+  }
+  .main{flex:1;min-width:0;padding:34px clamp(20px,4vw,56px) 80px}
+
+  /* ---------- Sidebar ---------- */
+  .brand{margin-bottom:26px}
+  .brand .brand-deco{height:2px;width:40px;border-radius:2px;margin-bottom:13px;
+    background:linear-gradient(90deg,var(--accent) 0%,var(--accent-soft) 45%,transparent 100%)}
+  .brand .wordmark{
+    width:124px;height:42px;display:block;
+    background-image:url('https://auria-advisory.fr/wp-content/uploads/2025/10/Logo-final-vertical-or-blanc-h.png');
+    background-repeat:no-repeat;background-position:left center;background-size:142px auto;
+    text-indent:-9999px;overflow:hidden;white-space:nowrap;
+  }
+  .brand .brand-title{font-family:var(--display);font-size:21px;font-weight:600;color:var(--ink);line-height:1.05;margin-top:7px}
+  .brand .brand-sub{font-size:10.5px;color:var(--muted);letter-spacing:.04em;margin-top:4px}
+  .nav-group{margin-bottom:18px}
+  .nav-label{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 8px 8px}
+  .nav a{
+    display:flex;align-items:center;gap:9px;
+    padding:7px 10px;border-radius:8px;border-left:2px solid transparent;
+    color:var(--ink);text-decoration:none;font-size:13.5px;cursor:pointer;
+    transition:background .12s,color .12s,border-color .12s;
+  }
+  .nav a:hover{background:#fff}
+  .nav a.active{background:#fff;color:var(--primary-dk);font-weight:600;border-left-color:var(--gold);box-shadow:var(--shadow)}
+  .nav a .ico{width:16px;text-align:center;opacity:.85}
+  .side-foot{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
+  .side-foot b{color:var(--ink-2);font-weight:600}
+  .side-foot .tagline{font-family:var(--serif);font-style:italic;color:var(--gold-dk);margin-bottom:7px;font-size:12px}
+
+  /* ---------- Generic blocks ---------- */
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  section{scroll-margin-top:24px;margin-bottom:30px}
+  .pad{padding:26px clamp(18px,3vw,34px)}
+
+  .warn{
+    background:var(--gold-soft);border:1px solid #F0CBB4;border-radius:10px;
+    padding:14px 18px;font-size:12.5px;color:#8A5638;margin-bottom:26px;
+    display:flex;gap:12px;align-items:flex-start;
+  }
+  .warn .wico{font-size:16px;line-height:1}
+  .warn b{color:#A85F38}
+
+  .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-dk);font-weight:700;margin-bottom:10px}
+  h1{font-family:var(--serif);font-size:clamp(28px,4.2vw,42px);line-height:1.1;margin:0 0 4px;font-weight:700;letter-spacing:-.3px}
+  h1 .accent{color:var(--gold-dk);font-style:italic}
+  h2{font-family:var(--serif);font-size:24px;margin:0 0 4px;font-weight:700;letter-spacing:-.2px;display:flex;align-items:center;gap:10px;color:var(--ink)}
+  h2 .num{color:var(--gold-dk)}
+  .lead{color:#4a4d52;max-width:760px;font-size:14.5px}
+  .sub{color:var(--muted);font-size:13px;margin:-2px 0 18px}
+  .meta-line{margin-top:18px;font-size:11px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;font-weight:600}
+
+  /* ---------- Risk cards (hero) ---------- */
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:14px}
+  .rcard{background:var(--panel-soft);border:1px solid var(--line);border-radius:12px;padding:16px;border-top:3px solid var(--line)}
+  .rcard.red{border-top-color:var(--red)}     .rcard.red h4{color:var(--red)}
+  .rcard.orange{border-top-color:var(--orange)} .rcard.orange h4{color:var(--orange)}
+  .rcard.blue{border-top-color:var(--blue)}   .rcard.blue h4{color:var(--blue)}
+  .rcard.green{border-top-color:var(--green)} .rcard.green h4{color:var(--green)}
+  .rcard .tag{font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+  .rcard h4{margin:6px 0 6px;font-size:16px}
+  .rcard p{margin:0;font-size:12.5px;color:#55514a}
+  .rcard .ref{display:block;margin-top:8px;font-size:11px;color:var(--muted);font-style:italic}
+
+  /* ---------- Accordion (résumé) ---------- */
+  .acc{border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden;background:var(--panel)}
+  .acc>summary{
+    list-style:none;cursor:pointer;padding:15px 18px;font-weight:600;font-size:14.5px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--ink);
+  }
+  .acc>summary::-webkit-details-marker{display:none}
+  .acc>summary .left{display:flex;align-items:center;gap:10px}
+  .acc>summary .chev{color:var(--muted);transition:transform .18s;font-size:13px}
+  .acc[open]>summary .chev{transform:rotate(45deg)}
+  .acc[open]>summary{border-bottom:1px solid var(--line-2)}
+  .acc .body{padding:4px 18px 18px;font-size:13.5px;color:#4d4a45}
+  .acc .body p{margin:10px 0}
+  .acc .body ul{margin:8px 0;padding-left:18px}
+  .acc .body li{margin:5px 0}
+  .acc .body .note{font-size:12px;color:var(--muted);font-style:italic;margin-top:10px}
+  .ref-i{color:var(--ink-2);font-weight:600}
+
+  /* timeline */
+  .tl{list-style:none;padding:0;margin:6px 0}
+  .tl li{position:relative;padding:6px 0 6px 22px}
+  .tl li::before{content:"";position:absolute;left:4px;top:13px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  .tl li::after{content:"";position:absolute;left:7.5px;top:21px;bottom:-6px;width:1px;background:var(--line)}
+  .tl li:last-child::after{display:none}
+  .tl b{color:var(--ink-2)}
+
+  /* ---------- Table ---------- */
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+  table{border-collapse:collapse;width:100%;min-width:880px;font-size:12.8px}
+  thead th{background:var(--primary-dk);color:#fff;text-align:left;padding:12px 14px;font-weight:600;font-size:12.5px}
+  tbody td{padding:13px 14px;border-top:1px solid var(--line-2);vertical-align:top;color:#4d4a45}
+  tbody tr:nth-child(even){background:var(--panel-soft)}
+  .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}
+  .b-red{background:var(--red-bg);color:var(--red)}
+  .b-orange{background:var(--orange-bg);color:var(--orange)}
+  .b-blue{background:var(--blue-bg);color:var(--blue)}
+  .b-green{background:var(--green-bg);color:var(--green)}
+  .b-violet{background:var(--violet-bg);color:var(--violet)}
+  td b{color:var(--ink-2);font-weight:600}
+
+  /* ---------- Tools ---------- */
+  .q{border:1px solid var(--line);border-radius:12px;padding:15px 18px;margin-bottom:12px;background:var(--panel-soft)}
+  .q .qt{font-weight:600;font-size:14px;margin-bottom:10px}
+  .q .qt small{display:block;font-weight:400;color:var(--muted);font-size:12px;margin-top:3px}
+  .opts{display:flex;flex-wrap:wrap;gap:18px}
+  .opt{display:flex;align-items:center;gap:7px;font-size:13.5px;cursor:pointer;user-select:none}
+  .opt input{accent-color:var(--primary);width:15px;height:15px;cursor:pointer}
+
+  .checks{display:grid;gap:9px}
+  .chk{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;cursor:pointer;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel-soft);transition:border-color .12s,background .12s}
+  .chk:hover{border-color:var(--gold)}
+  .chk input{accent-color:var(--primary);margin-top:2px;width:15px;height:15px;cursor:pointer;flex:0 0 auto}
+  .chk b{color:var(--ink-2);font-weight:600}
+  .chk .cref{color:var(--muted);font-size:12px}
+  .group-label{font-weight:700;color:var(--ink-2);font-size:13px;margin:18px 0 8px;letter-spacing:.02em}
+  .group-label.l-red{color:var(--red)} .group-label.l-orange{color:var(--orange)} .group-label.l-blue{color:var(--blue)}
+
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;font-size:13.5px;font-weight:600;padding:9px 18px;transition:filter .12s,background .12s,box-shadow .12s}
+  .btn-primary{background:var(--primary);color:#fff}
+  .btn-primary:hover{filter:brightness(1.12);box-shadow:0 0 0 2px var(--gold-soft)}
+  .btn-ghost{background:transparent;color:var(--ink-2);border:1px solid var(--line)}
+  .btn-ghost:hover{background:var(--panel-soft);border-color:var(--gold)}
+  .btn-soft{background:var(--gold-soft);color:var(--gold-dk)}
+  .btn-soft:hover{filter:brightness(.97)}
+
+  /* results */
+  .result{margin-top:18px;border-radius:12px;padding:16px 18px;border:1px solid var(--line);background:var(--panel-soft);display:none}
+  .result.show{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .result .verdict{display:inline-block;padding:4px 12px;border-radius:999px;font-weight:700;font-size:12px;margin-bottom:10px}
+  .result h5{margin:12px 0 3px;font-size:12.5px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em}
+  .result p{margin:2px 0;font-size:13.5px}
+  .result .reco{margin-top:12px;background:var(--gold-soft);border:1px solid #F0CBB4;border-radius:10px;padding:11px 14px;font-size:13px;color:#8A5638}
+  .result .reco b{color:#A85F38}
+  .result .foot{margin-top:12px;font-size:11.5px;color:var(--muted);font-style:italic}
+  .result .res-actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+
+  /* maturity bar */
+  .bar{height:12px;border-radius:999px;background:#EAE1D1;overflow:hidden;margin:8px 0}
+  .bar>i{display:block;height:100%;border-radius:999px;transition:width .5s ease}
+
+  /* ---------- Footer ---------- */
+  .page-foot{border-top:1px solid var(--line);margin-top:40px;padding-top:22px;font-size:12px;color:var(--muted)}
+  .page-foot b{color:var(--ink-2)}
+  .page-foot .src{margin-top:6px}
+  .foot-brand{display:flex;align-items:baseline;gap:14px;margin-bottom:12px}
+  .foot-brand .fb-name{font-family:var(--display);font-size:14px;font-weight:500;color:var(--accent);text-transform:uppercase;letter-spacing:3px}
+  .foot-brand .fb-tag{font-family:var(--display);font-style:italic;color:var(--gold-dk);font-size:13px}
+
+  /* toast */
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--primary-dk);color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:50}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  @media (max-width:880px){
+    .grid4{grid-template-columns:repeat(2,1fr)}
+    .sidebar{display:none}
+    .cf-grid,.cf-sign-grid,.doc-sign{grid-template-columns:1fr}
+    .roadmap-config,.roadmap-grid,.roadmap-streams{grid-template-columns:1fr}
+    #certificat-doc{padding:24px 20px}
+  }
+  /* ---------- Wizard (arbre annexe III) ---------- */
+  .wiz{margin-top:6px}
+  .wiz-bread{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;font-size:11.5px;color:var(--muted)}
+  .wiz-bread span{background:var(--panel-soft);border:1px solid var(--line);border-radius:999px;padding:2px 10px}
+  .wiz-bread span.cur{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .wiz-card{border:1px solid var(--line);border-radius:12px;padding:20px 22px;background:var(--panel-soft)}
+  .wiz-step{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:8px}
+  .wiz-q{font-size:17px;font-weight:700;color:var(--ink);margin:0 0 6px;line-height:1.3}
+  .wiz-help{font-size:13px;color:var(--muted);margin:0 0 16px}
+  .wiz-opts{display:grid;gap:10px}
+  .wiz-opt{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;padding:13px 16px;font-size:14px;color:var(--ink);font-weight:500;cursor:pointer;transition:border-color .12s,background .12s,transform .06s}
+  .wiz-opt:hover{border-color:var(--primary);background:#fff}
+  .wiz-opt:active{transform:translateY(1px)}
+  .wiz-result{border-radius:12px;padding:18px 20px;border:1px solid var(--line)}
+  .wiz-result .verdict{display:inline-block;padding:5px 14px;border-radius:999px;font-weight:700;font-size:13px;margin-bottom:10px}
+  .wiz-result h5{margin:12px 0 3px;font-size:12.5px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em}
+  .wiz-result p{margin:3px 0;font-size:13.5px}
+  .wiz-result .reco{margin-top:12px;background:var(--gold-soft);border:1px solid #F0CBB4;border-radius:10px;padding:11px 14px;font-size:13px;color:#8A5638}
+  .wiz-result .foot{margin-top:12px;font-size:11.5px;color:var(--muted);font-style:italic}
+
+  /* ---------- Certificat : formulaire ---------- */
+  .cert-form{margin-top:6px}
+  .cf-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .cf{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--ink-2);font-weight:600}
+  .cf.cf-wide{grid-column:1 / -1}
+  .cf input,.cf textarea,.cf select{font-family:inherit;font-size:13.5px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-weight:400}
+  .cf input:focus,.cf textarea:focus,.cf select:focus{outline:none;border-color:var(--primary)}
+  .cf-sign-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px;padding-top:18px;border-top:1px solid var(--line-2)}
+  .cf-sign-col{display:flex;flex-direction:column;gap:10px}
+  .cf-sign-title{font-weight:700;color:var(--ink);font-size:13.5px}
+
+  /* ---------- Certificat : document ---------- */
+  #certificat-doc{display:none;margin-top:24px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:42px 46px;color:#222;box-shadow:var(--shadow)}
+  #certificat-doc.show{display:block}
+  .doc-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--accent);padding-bottom:14px;margin-bottom:20px}
+  .doc-head .brandwrap .deco{height:2px;width:38px;border-radius:2px;margin-bottom:9px;
+    background:linear-gradient(90deg,var(--accent) 0%,var(--accent-soft) 45%,transparent 100%)}
+  .doc-head .wm{font-family:var(--display);text-transform:uppercase;letter-spacing:3.5px;font-size:13px;font-weight:500;color:var(--accent);line-height:1}
+  .doc-head .org-title{font-family:var(--display);font-size:22px;font-weight:600;color:var(--primary-dk);line-height:1.05;margin-top:5px}
+  .doc-head .tagline{font-family:var(--display);font-style:italic;font-size:12.5px;color:var(--gold-dk);margin-top:3px}
+  .doc-head .ref{text-align:right;font-size:11.5px;color:#555}
+  .doc-head .ref b{color:var(--primary-dk)}
+  .doc-title{font-family:var(--serif);font-size:21px;font-weight:700;color:var(--primary-dk);margin:0 0 2px}
+  .doc-subtitle{font-size:12px;color:#666;margin:0 0 20px}
+  .doc-sec{margin-bottom:18px}
+  .doc-sec h4{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-dk);border-bottom:1px solid var(--line);padding-bottom:5px;margin:0 0 9px}
+  .doc-kv{display:grid;grid-template-columns:170px 1fr;gap:5px 14px;font-size:13px}
+  .doc-kv dt{color:#666;font-weight:600}
+  .doc-kv dd{margin:0;color:#1c1c1c}
+  .doc-tbl{width:100%;border-collapse:collapse;font-size:12.5px;min-width:0}
+  .doc-tbl th,.doc-tbl td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  .doc-tbl th{background:#F4F2EC;color:var(--primary-dk);font-weight:700;width:200px}
+  .doc-badge{display:inline-block;padding:2px 9px;border-radius:5px;font-size:11.5px;font-weight:700}
+  .doc-note{font-size:12px;color:#444;background:var(--gold-soft);border-left:3px solid var(--gold);padding:10px 12px;border-radius:0 6px 6px 0}
+  .doc-note + .doc-note{margin-top:10px}
+  .notice{margin-top:14px;padding:14px 16px;border-radius:12px;border:1px solid var(--line);background:var(--panel-soft)}
+  .notice h4{margin:0 0 8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-dk)}
+  .notice p{margin:6px 0;font-size:13px;color:#4d4a45}
+  .notice ul{margin:8px 0 0;padding-left:18px;font-size:12.8px;color:#4d4a45}
+  .notice li{margin:5px 0}
+  .guard{display:none;margin-top:16px;padding:14px 16px;border-radius:12px;border:1px solid #F0CBB4;background:var(--gold-soft);color:#8A5638}
+  .guard.show{display:block}
+  .guard strong{color:#A85F38}
+  .guard ul{margin:8px 0 0;padding-left:18px}
+  .guard li{margin:5px 0}
+  .doc-sign{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:6px}
+  .doc-sign .box{border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+  .doc-sign .role{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--gold-dk);font-weight:700;margin-bottom:8px}
+  .doc-sign .line{font-size:12.5px;margin:3px 0;color:#222}
+  .doc-sign .line span{color:#888}
+  .doc-sign .sig{margin-top:10px;height:54px;border:1px dashed #c4b27f;border-radius:5px;display:flex;align-items:flex-end;justify-content:flex-start;padding:4px 8px;font-size:10px;color:#b3a071}
+  .doc-foot{margin-top:22px;padding-top:12px;border-top:1px solid var(--line);font-size:10.5px;color:#777;font-style:italic;line-height:1.5}
+  .doc-foot .addr{font-style:normal;color:#555;margin-bottom:4px}
+  .doc-foot .addr b{color:var(--primary-dk)}
+
+  /* ---------- Roadmap ---------- */
+  .roadmap-config{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+  .roadmap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+  .roadmap-phase{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 16px 14px;position:relative;overflow:hidden}
+  .roadmap-phase::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--accent)}
+  .roadmap-phase h4{margin:0 0 5px;font-size:15px;color:var(--ink)}
+  .roadmap-phase .phase-kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-dk);font-weight:700;margin-bottom:6px}
+  .roadmap-phase p{margin:0 0 10px;font-size:12.5px;color:#57524c}
+  .roadmap-phase ul{margin:0;padding-left:18px;font-size:13px;color:#3f3f3f}
+  .roadmap-phase li{margin:6px 0}
+  .roadmap-tasks{display:grid;gap:10px}
+  .roadmap-task{border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:var(--panel-soft)}
+  .roadmap-task h5{margin:0 0 7px;font-size:13.5px;color:var(--ink)}
+  .roadmap-meta{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:7px}
+  .roadmap-task p{margin:0;font-size:12.5px;color:#55514a}
+  .meta-pill{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:700;border:1px solid var(--line);background:#fff;color:var(--ink-2)}
+  .meta-pill.p-high{background:var(--red-bg);color:var(--red);border-color:#efc8c1}
+  .meta-pill.p-medium{background:var(--orange-bg);color:var(--orange);border-color:#f0d2bb}
+  .meta-pill.p-low{background:var(--blue-bg);color:var(--blue);border-color:#d5e0ec}
+  .roadmap-chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+  .roadmap-chip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);font-size:11.5px;font-weight:600;color:var(--ink-2)}
+  .roadmap-summary{margin-top:12px;padding:14px 16px;background:#fff;border:1px solid var(--line);border-radius:12px}
+  .roadmap-summary p{margin:6px 0;font-size:13.5px}
+  .roadmap-summary strong{color:var(--ink-2)}
+  .roadmap-streams{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
+  .roadmap-stream{padding:14px;border-radius:12px;background:var(--panel);border:1px solid var(--line)}
+  .roadmap-stream h5{margin:0 0 6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-dk)}
+  .roadmap-stream p{margin:0;font-size:13px;color:#55514a}
+  .doc-roadmap{display:grid;gap:10px}
+  .doc-roadmap .item{border:1px solid var(--line);border-radius:6px;padding:10px 12px;background:#fcfbf8}
+  .doc-roadmap .item b{display:block;color:var(--primary-dk);margin-bottom:4px;font-size:12px}
+  .doc-roadmap .item ul{margin:6px 0 0;padding-left:18px;font-size:12px}
+  .doc-roadmap .mini{margin-top:4px;font-size:11.5px;color:#666}
+
+  /* ---------- Impression ---------- */
+  @media print{
+    .sidebar,.btn-row,.res-actions,.warn,.cert-form{display:none!important}
+    body{background:#fff}
+    .card,.acc,.q{box-shadow:none;break-inside:avoid}
+    .acc{border:1px solid #ccc}
+    /* Impression « certificat seul » */
+    body.print-cert .main > section:not(#certificat){display:none!important}
+    body.print-cert .page-foot{display:none!important}
+    body.print-cert #certificat{border:none;box-shadow:none;padding:0}
+    body.print-cert #certificat > h2,
+    body.print-cert #certificat > .sub{display:none!important}
+    body.print-cert #certificat-doc{display:block!important;border:none;box-shadow:none;padding:8mm 4mm;margin:0}
+    @page{size:A4;margin:14mm}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-deco" aria-hidden="true"></div>
+      <div class="wordmark" role="img" aria-label="Auria Advisory">Auria Advisory</div>
+      <div class="brand-title">Règlement IA</div>
+      <div class="brand-sub">Conformité &amp; contrôle interne</div>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-group">
+        <a href="#accueil" class="active"><span class="ico">⌂</span>Accueil</a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">Comprendre</div>
+        <a href="#resume"><span class="ico">▤</span>Résumé du règlement</a>
+        <a href="#tableau"><span class="ico">▦</span>Tableau de synthèse</a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">Outils interactifs</div>
+        <a href="#t1"><span class="ico">①</span>Est-ce une IA ?</a>
+        <a href="#t2"><span class="ico">②</span>Niveau de risque</a>
+        <a href="#arbre"><span class="ico">⌥</span>Arbre annexe III</a>
+        <a href="#t3"><span class="ico">③</span>Fournisseur / déployeur</a>
+        <a href="#t4"><span class="ico">④</span>Checklist haut risque</a>
+        <a href="#t5"><span class="ico">⑤</span>Impact droits fondamentaux</a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">Qualification</div>
+        <a href="#roadmap"><span class="ico">↗</span>Roadmap automatique</a>
+        <a href="#certificat"><span class="ico">▣</span>Fiche &amp; certificat PDF</a>
+      </div>
+    </nav>
+
+    <div class="side-foot">
+      <div class="tagline">Consulting That Makes Sense</div>
+      <b>Règlement (UE) 2024/1689</b><br>
+      Aide à la qualification — non juridique.<br>
+      v4.1 · juin 2026
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <!-- ---- Avertissement ---- -->
+    <div class="warn" id="accueil">
+      <span class="wico">⚠️</span>
+      <div><b>Avertissement.</b> Cet outil est une <b>aide à la qualification</b> et ne remplace pas une analyse juridique complète. Les résultats sont indicatifs et fondés sur vos réponses. Toute qualification doit être documentée, <b>validée par un juriste</b> et revue régulièrement (évolution du système, des usages, des lignes directrices de la Commission et des autorités nationales).</div>
+    </div>
+
+    <!-- ---- HERO ---- -->
+    <section class="card pad">
+      <div class="eyebrow">Auria Advisory · Règlement (UE) 2024/1689 · AI Act</div>
+      <h1>Maîtriser le Règlement européen sur l'IA.<br><span class="accent">Qualifier. Classer. Documenter.</span></h1>
+      <p class="lead" style="margin-top:14px">Le <b>Règlement (UE) 2024/1689</b>, dit « AI Act », est le premier cadre juridique complet au monde sur l'intelligence artificielle. Il vise une IA digne de confiance : sûre, transparente, traçable, non discriminatoire et respectueuse des droits fondamentaux, tout en soutenant l'innovation. Il s'applique selon une <b>approche fondée sur les risques</b> : plus un usage est risqué, plus les obligations sont lourdes.</p>
+      <div class="meta-line">Entrée en vigueur : 1ᵉʳ août 2024 · Application progressive jusqu'en 2027 · Texte de référence : Règlement (UE) 2024/1689</div>
+    </section>
+
+    <!-- ---- Approche par les risques ---- -->
+    <section class="card pad">
+      <h2 style="font-size:20px">L'approche par les risques en un coup d'œil</h2>
+      <p class="sub">Le règlement classe les systèmes d'IA en quatre niveaux, auxquels s'ajoute un régime spécifique pour les modèles à usage général.</p>
+      <div class="grid4">
+        <div class="rcard red">
+          <span class="tag">Inacceptable</span>
+          <h4>Pratiques interdites</h4>
+          <p>Manipulation subliminale, exploitation de vulnérabilités, notation sociale, etc. (interdites depuis le 2 février 2025).</p>
+          <span class="ref">art. 5</span>
+        </div>
+        <div class="rcard orange">
+          <span class="tag">Haut risque</span>
+          <h4>IA à haut risque</h4>
+          <p>Forte exigence : gestion des risques, données, documentation, contrôle humain, enregistrement UE.</p>
+          <span class="ref">titre III, annexes I &amp; III</span>
+        </div>
+        <div class="rcard blue">
+          <span class="tag">Risque limité</span>
+          <h4>Obligations de transparence</h4>
+          <p>Informer les personnes (chatbots, contenus générés / deepfakes).</p>
+          <span class="ref">art. 50</span>
+        </div>
+        <div class="rcard green">
+          <span class="tag">Risque minimal</span>
+          <h4>Aucune obligation spécifique</h4>
+          <p>Majorité des usages (filtres anti-spam, jeux…). Codes volontaires encouragés.</p>
+          <span class="ref">codes de conduite</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RÉSUMÉ PÉDAGOGIQUE ============ -->
+    <section id="resume" class="card pad">
+      <h2>📘 Résumé pédagogique du règlement</h2>
+      <p class="sub">Sections synthétiques pour comprendre l'essentiel. Dépliez chaque rubrique.</p>
+
+      <details class="acc" open>
+        <summary><span class="left">🎯 Objectifs du règlement</span><span class="chev">＋</span></summary>
+        <div class="body"><p>Garantir que les systèmes d'IA mis sur le marché de l'UE sont sûrs et respectent les droits fondamentaux et les valeurs de l'Union ; assurer la sécurité juridique pour favoriser l'investissement et l'innovation ; améliorer la gouvernance et l'application effective du droit existant ; faciliter un marché unique pour une IA légale, sûre et digne de confiance, et éviter la fragmentation entre États membres.</p></div>
+      </details>
+
+      <details class="acc">
+        <summary><span class="left">🌍 Champ d'application territorial</span><span class="chev">＋</span></summary>
+        <div class="body">
+          <p>Le règlement a une <b>portée extraterritoriale</b>. Il s'applique notamment :</p>
+          <ul>
+            <li>aux <b>fournisseurs</b> qui mettent sur le marché ou en service des systèmes d'IA dans l'UE, où qu'ils soient établis ;</li>
+            <li>aux <b>déployeurs</b> établis dans l'UE ;</li>
+            <li>aux fournisseurs et déployeurs établis hors UE <b>lorsque le résultat produit par le système est utilisé dans l'UE</b>.</li>
+          </ul>
+          <p>Exclusions : usages purement militaires / défense et sécurité nationale, recherche et développement avant mise sur le marché, et usage strictement personnel non professionnel.</p>
+          <p class="note">art. 2 — exclusions à confirmer selon le cas.</p>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary><span class="left">👥 Acteurs concernés (rôles)</span><span class="chev">＋</span></summary>
+        <div class="body">
+          <ul>
+            <li><b>Fournisseur</b> : développe un système d'IA (ou un GPAI) et le met sur le marché / en service sous son nom ou sa marque.</li>
+            <li><b>Déployeur</b> : utilise un système d'IA sous sa propre autorité, dans un cadre professionnel.</li>
+            <li><b>Importateur</b> : établi dans l'UE, met sur le marché un système portant le nom d'un acteur établi hors UE.</li>
+            <li><b>Distributeur</b> : maillon de la chaîne d'approvisionnement (autre que fournisseur / importateur) qui met le système à disposition.</li>
+            <li><b>Mandataire</b> : personne établie dans l'UE désignée par un fournisseur hors UE pour le représenter.</li>
+          </ul>
+          <p class="note">Attention : un déployeur peut devenir fournisseur en cas de modification substantielle ou de changement de finalité (art. 25).</p>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary><span class="left">📅 Calendrier d'application</span><span class="chev">＋</span></summary>
+        <div class="body">
+          <ul class="tl">
+            <li><b>1ᵉʳ août 2024</b> — entrée en vigueur du règlement.</li>
+            <li><b>2 février 2025</b> — application des pratiques interdites (art. 5) et des obligations de littératie / culture de l'IA (art. 4).</li>
+            <li><b>2 août 2025</b> — règles sur les modèles à usage général (GPAI), obligations des autorités notifiantes et sanctions.</li>
+            <li><b>2 août 2026</b> — application de la majorité du règlement, dont les systèmes à haut risque de l'annexe III et la transparence (art. 50).</li>
+            <li><b>2 août 2027</b> — systèmes à haut risque relevant de l'annexe I (produits déjà soumis à une législation d'harmonisation).</li>
+          </ul>
+          <p class="note">Dates clés issues du règlement ; vérifier les éventuels ajustements / lignes directrices ultérieures.</p>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary><span class="left">🗂️ Classification des systèmes d'IA</span><span class="chev">＋</span></summary>
+        <div class="body">
+          <p>Quatre niveaux : <span class="badge b-red">inacceptable / interdit</span> (art. 5), <span class="badge b-orange">haut risque</span> (art. 6 + annexes I et III), <span class="badge b-blue">risque limité</span> (transparence, art. 50), <span class="badge b-green">risque minimal</span> (pas d'obligation spécifique). En parallèle, les <span class="badge b-violet">GPAI</span> ont leur propre régime (art. 51-56).</p>
+          <p>Un système relève du <b>haut risque</b> s'il est listé à l'annexe III ou s'il est composant de sécurité / produit couvert par l'annexe I. Une exception existe (art. 6 §3) lorsque le système ne présente pas de risque significatif — <b>à documenter</b>.</p>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary><span class="left">🏭 Obligations des fournisseurs (haut risque)</span><span class="chev">＋</span></summary>
+        <div class="body"><p>Mettre en place un <b>système de gestion des risques</b> (art. 9) ; assurer la <b>gouvernance des données</b> (art. 10) ; établir la <b>documentation technique</b> (art. 11 + annexe IV) ; permettre la <b>journalisation automatique</b> (art. 12) ; garantir <b>transparence et instructions d'utilisation</b> (art. 13) ; concevoir un <b>contrôle humain effectif</b> (art. 14) ; assurer <b>exactitude, robustesse et cybersécurité</b> (art. 15) ; apposer le <b>marquage CE</b>, rédiger la déclaration UE de conformité, enregistrer le système dans la base de données UE (art. 49) et assurer la <b>surveillance après commercialisation</b> (art. 72). Obligations générales de l'art. 16.</p></div>
+      </details>
+
+      <details class="acc">
+        <summary><span class="left">🏢 Obligations des déployeurs (haut risque)</span><span class="chev">＋</span></summary>
+        <div class="body"><p>Utiliser le système <b>conformément aux instructions</b> ; assurer un <b>contrôle humain</b> par des personnes compétentes ; veiller à la pertinence des données d'entrée ; surveiller le fonctionnement et suspendre / signaler en cas de risque ou d'incident grave ; conserver les journaux ; informer les travailleurs et leurs représentants en contexte professionnel ; informer les personnes soumises à une décision ; le cas échéant, réaliser une <b>analyse d'impact sur les droits fondamentaux</b> (art. 27) et coopérer avec les autorités. <span class="ref-i">Cadre général : art. 26.</span></p></div>
+      </details>
+
+      <details class="acc">
+        <summary><span class="left">📑 Documentation attendue</span><span class="chev">＋</span></summary>
+        <div class="body"><p>Documentation technique (art. 11 / annexe IV), système de gestion des risques (art. 9), politique de gouvernance des données (art. 10), journaux / logs (art. 12), instructions d'utilisation (art. 13), déclaration UE de conformité, certificat d'évaluation de conformité, enregistrement dans la base UE (art. 49 / annexe VIII), plan ou rapport de surveillance après commercialisation (art. 72), analyse d'impact sur les droits fondamentaux le cas échéant (art. 27). Conserver à disposition des autorités.</p></div>
+      </details>
+
+      <details class="acc">
+        <summary><span class="left">🛡️ Gouvernance, contrôle humain, robustesse, cybersécurité, qualité des données</span><span class="chev">＋</span></summary>
+        <div class="body">
+          <ul>
+            <li><b>Qualité des données</b> (art. 10) : jeux d'entraînement, validation et test pertinents, représentatifs, exempts d'erreurs autant que possible, examinés pour les biais.</li>
+            <li><b>Contrôle humain</b> (art. 14) : mesures permettant à des humains de comprendre, surveiller, intervenir et arrêter le système.</li>
+            <li><b>Robustesse &amp; exactitude</b> (art. 15) : niveaux appropriés, résilience aux erreurs et aux environnements adverses.</li>
+            <li><b>Cybersécurité</b> (art. 15) : résistance aux tentatives de manipulation (empoisonnement de données, attaques adverses, etc.).</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary><span class="left">⚖️ Sanctions</span><span class="chev">＋</span></summary>
+        <div class="body">
+          <ul>
+            <li><b>Pratiques interdites</b> (art. 5) : jusqu'à <b>35 M€ ou 7 %</b> du chiffre d'affaires annuel mondial total (le plus élevé).</li>
+            <li><b>Manquements à d'autres obligations</b> (fournisseurs, déployeurs, etc.) : jusqu'à <b>15 M€ ou 3 %</b> du CA.</li>
+            <li><b>Informations inexactes / trompeuses</b> aux autorités : jusqu'à <b>7,5 M€ ou 1 %</b> du CA.</li>
+          </ul>
+          <p>Des plafonds adaptés s'appliquent aux PME et jeunes pousses. Régime des sanctions : art. 99 (art. 101 pour les GPAI). Plafonds spécifiques selon les institutions de l'UE.</p>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary><span class="left">🔗 Liens avec RGPD, DORA, NIS2, LCB-FT et contrôle interne</span><span class="chev">＋</span></summary>
+        <div class="body">
+          <ul>
+            <li><b>RGPD</b> : l'AI Act ne remplace pas le RGPD. Tout traitement de données personnelles reste soumis au RGPD (base légale, AIPD / DPIA, minimisation). L'analyse d'impact droits fondamentaux (art. 27) peut compléter une AIPD existante.</li>
+            <li><b>DORA</b> : pour les entités financières, la résilience opérationnelle numérique et la gestion des risques liés aux prestataires TIC s'articulent avec les exigences de robustesse et cybersécurité de l'IA.</li>
+            <li><b>NIS2</b> : exigences de cybersécurité et de gestion des incidents pour les entités essentielles / importantes, cohérentes avec l'art. 15.</li>
+            <li><b>LCB-FT</b> : les outils de scoring / filtrage AML peuvent relever du haut risque (services financiers / évaluation) ; documenter explicabilité, biais et contrôle humain.</li>
+            <li><b>Contrôle interne</b> : intégrer la conformité IA dans le dispositif (cartographie des risques, politiques, registres, plans de contrôle de niveaux 1 / 2, reporting au comité des risques).</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <!-- ============ TABLEAU DE SYNTHÈSE ============ -->
+    <section id="tableau" class="card pad">
+      <h2>📊 Tableau de synthèse</h2>
+      <p class="sub">Vue d'ensemble des catégories, exemples, obligations, acteurs et niveau de vigilance.</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th>Catégorie</th><th>Exemples</th><th>Obligations principales</th><th>Acteurs concernés</th><th>Vigilance conformité</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="badge b-red">Interdit</span></td>
+              <td>Manipulation subliminale, exploitation de vulnérabilités, notation sociale, reconnaissance biométrique à distance en temps réel, moisson non ciblée d'images faciales, déduction d'émotions au travail / à l'école.</td>
+              <td>Interdiction pure et simple de mise sur le marché et d'usage <b>(art. 5)</b>.</td>
+              <td>Tous</td>
+              <td><b>Maximale</b> — sanctions les plus lourdes (35 M€ / 7 %).</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-orange">Haut risque</span></td>
+              <td>RH / recrutement, scoring crédit, assurance, éducation, infrastructures critiques, justice, migration / asile, biométrie autorisée, dispositifs couverts par l'annexe I.</td>
+              <td>Gestion des risques, données, documentation technique, logs, transparence, contrôle humain, robustesse / cybersécurité, évaluation de conformité, enregistrement base UE, surveillance post-marché <b>(art. 8-15, 43, 49, 72)</b>.</td>
+              <td>Fournisseur (principal) + déployeur</td>
+              <td><b>Élevée</b> — programme de conformité complet à documenter.</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-blue">Risque limité</span></td>
+              <td>Chatbots, assistants conversationnels, contenu généré par IA (texte, image, audio, vidéo), deepfakes.</td>
+              <td>Obligations de transparence : informer la personne qu'elle interagit avec une IA ; marquer / divulguer le contenu synthétique <b>(art. 50)</b>.</td>
+              <td>Fournisseur + déployeur</td>
+              <td><b>Modérée</b> — mentions et marquage à mettre en place.</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-green">Risque minimal</span></td>
+              <td>Filtres anti-spam, IA de jeux vidéo, moteurs de recommandation simples, maintenance prédictive non couverte par l'annexe III.</td>
+              <td>Pas d'obligation spécifique : codes de conduite volontaires et bonnes pratiques encouragés.</td>
+              <td>Tous (volontaire)</td>
+              <td><b>Faible</b> — veille et bonnes pratiques.</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-violet">GPAI</span></td>
+              <td>Grands modèles de langage et modèles de fondation à usage général, intégrables dans de multiples systèmes.</td>
+              <td>Documentation technique, informations aux intégrateurs, politique droit d'auteur, résumé des données d'entraînement ; obligations renforcées si risque systémique <b>(art. 51-56)</b>.</td>
+              <td>Fournisseur de modèle</td>
+              <td><b>Élevée</b> si risque systémique, sinon modérée.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="sub" style="margin-top:12px">Tableau indicatif. La qualification d'un cas concret dépend de la finalité précise et du contexte ; vérifier l'annexe III et les lignes directrices applicables.</p>
+    </section>
+
+    <!-- ============ OUTIL 1 ============ -->
+    <section id="t1" class="card pad">
+      <h2><span class="num">①</span> Mon outil est-il un système d'IA ?</h2>
+      <p class="sub">Qualification au regard de la définition de l'art. 3, point 1 (système fonctionnant avec un certain degré d'autonomie, qui infère, à partir d'entrées, des sorties telles que prédictions, recommandations, décisions ou contenus).</p>
+
+      <div data-tool="t1">
+        <div class="q" data-q="1">
+          <div class="qt">1. Le système repose-t-il sur des techniques d'IA ?<small>machine learning, deep learning, modèles statistiques, logique ou approches fondées sur des règles</small></div>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="t1q1" value="2">Oui</label>
+            <label class="opt"><input type="radio" name="t1q1" value="1">En partie / Incertain</label>
+            <label class="opt"><input type="radio" name="t1q1" value="0">Non</label>
+          </div>
+        </div>
+        <div class="q" data-q="2">
+          <div class="qt">2. Génère-t-il des prédictions, recommandations, décisions ou contenus ?</div>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="t1q2" value="2">Oui</label>
+            <label class="opt"><input type="radio" name="t1q2" value="1">En partie / Incertain</label>
+            <label class="opt"><input type="radio" name="t1q2" value="0">Non</label>
+          </div>
+        </div>
+        <div class="q" data-q="3">
+          <div class="qt">3. Fonctionne-t-il avec un certain degré d'autonomie ?<small>sorties non entièrement prédéterminées par un humain à chaque étape</small></div>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="t1q3" value="2">Oui</label>
+            <label class="opt"><input type="radio" name="t1q3" value="1">En partie / Incertain</label>
+            <label class="opt"><input type="radio" name="t1q3" value="0">Non</label>
+          </div>
+        </div>
+        <div class="q" data-q="4">
+          <div class="qt">4. Influence-t-il une décision humaine ou automatisée ?</div>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="t1q4" value="2">Oui</label>
+            <label class="opt"><input type="radio" name="t1q4" value="1">En partie / Incertain</label>
+            <label class="opt"><input type="radio" name="t1q4" value="0">Non</label>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="evalT1()">Évaluer</button>
+          <button class="btn-ghost" onclick="resetTool('t1')">Réinitialiser</button>
+        </div>
+        <div class="result" id="t1-res"></div>
+      </div>
+    </section>
+
+    <!-- ============ OUTIL 2 ============ -->
+    <section id="t2" class="card pad">
+      <h2><span class="num">②</span> Classification du niveau de risque</h2>
+      <p class="sub">Cochez tous les usages applicables. L'outil identifie la catégorie la plus contraignante. (Réf. art. 5, art. 6 + annexe III, art. 50.)</p>
+
+      <div data-tool="t2">
+        <div class="group-label l-red">Pratiques potentiellement interdites (art. 5)</div>
+        <div class="checks">
+          <label class="chk"><input type="checkbox" data-cat="interdit" value="Techniques subliminales / manipulatrices ou trompeuses"><span>Recourt à des techniques <b>subliminales / manipulatrices ou trompeuses</b> altérant le comportement.</span></label>
+          <label class="chk"><input type="checkbox" data-cat="interdit" value="Exploitation de vulnérabilités"><span>Exploite les <b>vulnérabilités</b> d'une personne ou d'un groupe (âge, handicap, situation sociale / économique).</span></label>
+          <label class="chk"><input type="checkbox" data-cat="interdit" value="Notation sociale"><span>Réalise une <b>notation sociale</b> (social scoring) conduisant à un traitement défavorable injustifié.</span></label>
+          <label class="chk"><input type="checkbox" data-cat="interdit" value="Identification biométrique à distance en temps réel"><span>Procède à une <b>identification biométrique à distance en temps réel</b> dans l'espace public (hors exceptions strictes).</span></label>
+          <label class="chk"><input type="checkbox" data-cat="interdit" value="Reconnaissance des émotions au travail / à l'école"><span>Réalise une <b>reconnaissance des émotions</b> au travail ou dans l'éducation.</span></label>
+        </div>
+
+        <div class="group-label l-orange">Domaines potentiellement à haut risque (annexe III)</div>
+        <div class="checks">
+          <label class="chk"><input type="checkbox" data-cat="haut" value="Identification / catégorisation biométrique"><span><b>Identification ou catégorisation biométrique</b> (hors usages interdits).</span></label>
+          <label class="chk"><input type="checkbox" data-cat="haut" value="Recrutement / RH"><span><b>Recrutement / RH</b> (tri de CV, évaluation, promotion, licenciement).</span></label>
+          <label class="chk"><input type="checkbox" data-cat="haut" value="Crédit, assurance, services essentiels"><span><b>Crédit, assurance</b> ou accès à des <b>services essentiels</b> (privés ou publics).</span></label>
+          <label class="chk"><input type="checkbox" data-cat="haut" value="Éducation / formation"><span><b>Éducation / formation</b> (accès, notation, surveillance d'examens).</span></label>
+          <label class="chk"><input type="checkbox" data-cat="haut" value="Infrastructure critique"><span><b>Infrastructure critique</b> (énergie, eau, transport, composant de sécurité).</span></label>
+          <label class="chk"><input type="checkbox" data-cat="haut" value="Justice, police, migration / asile"><span><b>Justice, police</b> (répression) ou <b>migration / asile / contrôle aux frontières</b>.</span></label>
+        </div>
+
+        <div class="group-label l-blue">Transparence (art. 50)</div>
+        <div class="checks">
+          <label class="chk"><input type="checkbox" data-cat="limite" value="Chatbot / interaction directe"><span><b>Chatbot / interaction directe</b> avec une personne physique.</span></label>
+          <label class="chk"><input type="checkbox" data-cat="limite" value="Contenu synthétique / deepfakes"><span>Génère du <b>contenu synthétique</b> (texte, image, audio, vidéo) ou des <b>deepfakes</b>.</span></label>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-primary" onclick="evalT2()">Classer le système</button>
+          <button class="btn-ghost" onclick="resetTool('t2')">Réinitialiser</button>
+        </div>
+        <div class="result" id="t2-res"></div>
+      </div>
+    </section>
+
+    <!-- ============ ARBRE ANNEXE III ============ -->
+    <section id="arbre" class="card pad">
+      <h2><span class="num">⌥</span> Arbre de décision — Haut risque (annexe III)</h2>
+      <p class="sub">Parcours guidé question par question pour qualifier un système au regard de l'annexe III, de l'annexe I et de la dérogation de l'art. 6 §3. À utiliser après avoir confirmé qu'il s'agit bien d'un système d'IA (outil ①).</p>
+
+      <div id="wiz" class="wiz">
+        <div class="wiz-bread" id="wiz-bread"></div>
+        <div class="wiz-card" id="wiz-card"></div>
+        <div class="btn-row" id="wiz-nav">
+          <button class="btn-ghost" id="wiz-back" onclick="wizBack()" style="display:none">← Précédent</button>
+          <button class="btn-ghost" onclick="wizReset()">Recommencer</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ OUTIL 3 ============ -->
+    <section id="t3" class="card pad">
+      <h2><span class="num">③</span> Suis-je fournisseur ou déployeur ?</h2>
+      <p class="sub">Détermination du rôle (art. 3 — définitions ; art. 25 — bascule de rôle).</p>
+
+      <div data-tool="t3">
+        <div class="q"><div class="qt">1. Ai-je développé le système moi-même ?</div>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="t3q1" value="oui">Oui</label>
+            <label class="opt"><input type="radio" name="t3q1" value="non">Non</label></div></div>
+        <div class="q"><div class="qt">2. Ai-je fait développer le système pour mon compte (sous-traitance) ?</div>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="t3q2" value="oui">Oui</label>
+            <label class="opt"><input type="radio" name="t3q2" value="non">Non</label></div></div>
+        <div class="q"><div class="qt">3. Est-ce que je le mets sur le marché / en service sous mon nom ou ma marque ?</div>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="t3q3" value="oui">Oui</label>
+            <label class="opt"><input type="radio" name="t3q3" value="non">Non</label></div></div>
+        <div class="q"><div class="qt">4. Est-ce que j'utilise simplement l'outil dans mon activité professionnelle ?</div>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="t3q4" value="oui">Oui</label>
+            <label class="opt"><input type="radio" name="t3q4" value="non">Non</label></div></div>
+        <div class="q"><div class="qt">5. Est-ce que je modifie substantiellement le système ou j'en change la finalité ?<small>ou j'appose mon nom sur un système haut risque existant</small></div>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="t3q5" value="oui">Oui</label>
+            <label class="opt"><input type="radio" name="t3q5" value="non">Non</label></div></div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="evalT3()">Déterminer mon rôle</button>
+          <button class="btn-ghost" onclick="resetTool('t3')">Réinitialiser</button>
+        </div>
+        <div class="result" id="t3-res"></div>
+      </div>
+    </section>
+
+    <!-- ============ OUTIL 4 ============ -->
+    <section id="t4" class="card pad">
+      <h2><span class="num">④</span> Checklist conformité — IA à haut risque</h2>
+      <p class="sub">Auto-évaluation du niveau de maturité. Cochez les exigences déjà en place et documentées. (Réf. art. 8-15, 43, 49, 72, 73.)</p>
+
+      <div data-tool="t4">
+        <div class="checks">
+          <label class="chk"><input type="checkbox"><span>Système de gestion des risques opérationnel <span class="cref">(art. 9)</span></span></label>
+          <label class="chk"><input type="checkbox"><span>Gouvernance et qualité des données <span class="cref">(art. 10)</span></span></label>
+          <label class="chk"><input type="checkbox"><span>Documentation technique à jour <span class="cref">(art. 11 / annexe IV)</span></span></label>
+          <label class="chk"><input type="checkbox"><span>Journalisation automatique (logs) <span class="cref">(art. 12)</span></span></label>
+          <label class="chk"><input type="checkbox"><span>Transparence et instructions d'utilisation <span class="cref">(art. 13)</span></span></label>
+          <label class="chk"><input type="checkbox"><span>Dispositif de contrôle humain effectif <span class="cref">(art. 14)</span></span></label>
+          <label class="chk"><input type="checkbox"><span>Exactitude, robustesse et cybersécurité <span class="cref">(art. 15)</span></span></label>
+          <label class="chk"><input type="checkbox"><span>Évaluation de conformité réalisée <span class="cref">(art. 43)</span></span></label>
+          <label class="chk"><input type="checkbox"><span>Enregistrement en base UE (si applicable) <span class="cref">(art. 49)</span></span></label>
+          <label class="chk"><input type="checkbox"><span>Surveillance après commercialisation <span class="cref">(art. 72)</span></span></label>
+          <label class="chk"><input type="checkbox"><span>Procédure de signalement des incidents graves <span class="cref">(art. 73)</span></span></label>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="evalT4()">Calculer mon score de maturité</button>
+          <button class="btn-ghost" onclick="resetTool('t4')">Réinitialiser</button>
+        </div>
+        <div class="result" id="t4-res"></div>
+      </div>
+    </section>
+
+    <!-- ============ OUTIL 5 ============ -->
+    <section id="t5" class="card pad">
+      <h2><span class="num">⑤</span> Analyse d'impact sur les droits fondamentaux</h2>
+      <p class="sub">Pour les déployeurs : déterminer si une analyse d'impact (AIDF / FRIA, art. 27) est probablement requise.</p>
+
+      <div data-tool="t5">
+        <div class="q"><div class="qt">1. Le système est-il utilisé par une entité publique (ou un opérateur de service public) ?</div>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="t5q1" value="oui">Oui</label>
+            <label class="opt"><input type="radio" name="t5q1" value="non">Non</label></div></div>
+        <div class="q"><div class="qt">2. Sert-il à l'emploi, au crédit, à l'éducation ou à l'accès à des services essentiels ?</div>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="t5q2" value="oui">Oui</label>
+            <label class="opt"><input type="radio" name="t5q2" value="non">Non</label></div></div>
+        <div class="q"><div class="qt">3. Peut-il produire un effet juridique ou significatif sur une personne ?</div>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="t5q3" value="oui">Oui</label>
+            <label class="opt"><input type="radio" name="t5q3" value="non">Non</label></div></div>
+        <div class="q"><div class="qt">4. Existe-t-il un risque de discrimination (biais sur des groupes protégés) ?</div>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="t5q4" value="oui">Oui</label>
+            <label class="opt"><input type="radio" name="t5q4" value="incertain">Incertain</label>
+            <label class="opt"><input type="radio" name="t5q4" value="non">Non</label></div></div>
+        <div class="q"><div class="qt">5. Un contrôle humain est-il déjà documenté ?</div>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="t5q5" value="oui">Oui</label>
+            <label class="opt"><input type="radio" name="t5q5" value="non">Non</label></div></div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="evalT5()">Évaluer le besoin d'AIDF</button>
+          <button class="btn-ghost" onclick="resetTool('t5')">Réinitialiser</button>
+        </div>
+        <div class="result" id="t5-res"></div>
+      </div>
+    </section>
+
+    <!-- ============ ROADMAP AUTOMATIQUE ============ -->
+    <section id="roadmap" class="card pad">
+      <h2>↗ Roadmap automatique de remédiation AI Act</h2>
+      <p class="sub">Génère un plan d'action priorisé à partir des résultats des outils ci-dessus, sans ressaisie. Le démonstrateur propose une trajectoire type à adapter à votre gouvernance, à vos risques et à votre secteur.</p>
+
+      <div class="roadmap-config">
+        <label class="cf"><span>Horizon cible</span>
+          <select id="rm-horizon">
+            <option value="90">90 jours</option>
+            <option value="180" selected>180 jours</option>
+            <option value="365">12 mois</option>
+          </select>
+        </label>
+        <label class="cf"><span>Logique de priorisation</span>
+          <select id="rm-mode">
+            <option value="balanced" selected>Équilibrée</option>
+            <option value="risk">Réduction du risque d'abord</option>
+            <option value="evidence">Documentation et preuves d'abord</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-primary" onclick="generateRoadmap()">Générer la roadmap automatique</button>
+        <button class="btn-ghost" onclick="resetRoadmap()">Réinitialiser</button>
+      </div>
+
+      <div class="result" id="roadmap-res"></div>
+    </section>
+
+    <!-- ============ FICHE & CERTIFICAT ============ -->
+    <section id="certificat" class="card pad">
+      <h2>▣ Fiche de qualification &amp; certificat PDF</h2>
+      <p class="sub">Compile les résultats des outils ci-dessus en une fiche de qualification signable. Renseignez l'identification du système, générez l'aperçu, puis exportez en PDF (impression du navigateur → « Enregistrer au format PDF »).</p>
+
+      <div class="cert-form">
+        <div class="cf-grid">
+          <label class="cf"><span>Organisation émettrice</span><input id="cf-org" type="text" value="Auria Advisory" placeholder="Cabinet / organisation"></label>
+          <label class="cf"><span>Référence dossier / projet</span><input id="cf-ref" type="text" placeholder="ex. AURIA-IA-2026-014"></label>
+          <label class="cf"><span>Nom du système d'IA</span><input id="cf-sys" type="text" placeholder="ex. Moteur de scoring crédit XYZ"></label>
+          <label class="cf"><span>Date d'évaluation</span><input id="cf-date" type="date"></label>
+          <label class="cf cf-wide"><span>Finalité / description du système</span><textarea id="cf-fin" rows="2" placeholder="Finalité, périmètre d'usage, public concerné…"></textarea></label>
+        </div>
+
+        <div class="cf-sign-grid">
+          <div class="cf-sign-col">
+            <div class="cf-sign-title">Rédigé par</div>
+            <label class="cf"><span>Nom</span><input id="cf-red-nom" type="text" placeholder="Nom &amp; prénom"></label>
+            <label class="cf"><span>Fonction</span><input id="cf-red-fonc" type="text" placeholder="ex. Consultant conformité IA"></label>
+          </div>
+          <div class="cf-sign-col">
+            <div class="cf-sign-title">Validé par (juridique / conformité)</div>
+            <label class="cf"><span>Nom</span><input id="cf-val-nom" type="text" placeholder="Nom &amp; prénom"></label>
+            <label class="cf"><span>Fonction</span><input id="cf-val-fonc" type="text" placeholder="ex. Juriste / DPO / Responsable conformité"></label>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-primary" onclick="generateCert()">Générer l'aperçu de la fiche</button>
+          <button class="btn-soft" onclick="exportCert()">🖨️ Exporter en PDF</button>
+        </div>
+        <p class="sub" style="margin-top:10px">Astuce : dans la boîte d'impression, choisissez « Enregistrer au format PDF », format A4, marges par défaut. La fiche s'imprime seule (sans le reste de l'outil).</p>
+        <div class="guard" id="cert-guard" aria-live="polite"></div>
+        <div class="notice">
+          <h4>Hypothèses et limites</h4>
+          <p>Cette V1 est un démonstrateur d'aide à la qualification et à la remédiation. Elle repose sur les réponses saisies, des cas d'usage simplifiés et des règles indicatives.</p>
+          <ul>
+            <li>Le socle minimal pour générer la fiche est : qualification « système d'IA », niveau de risque ou arbre annexe III, rôle de l'acteur, et identification du système.</li>
+            <li>Les résultats ne couvrent pas exhaustivement les cas GPAI, importateur, distributeur, mandataire, ni tous les cas sectoriels complexes.</li>
+            <li>La roadmap proposée est un plan type : les propriétaires, délais et livrables doivent être ajustés à l'organisation, au secteur et au niveau réel de risque.</li>
+            <li>La fiche ne remplace ni une validation juridique, ni une AIPD RGPD, ni une revue sécurité / contrôle interne lorsque ces analyses sont requises.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Document certificat (aperçu + cible d'impression) -->
+      <div id="certificat-doc" aria-live="polite"></div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="page-foot">
+      <div class="foot-brand"><span class="fb-name">Auria Advisory</span><span class="fb-tag">Consulting That Makes Sense</span></div>
+      <b>Outil de qualification — Règlement (UE) 2024/1689.</b> Aide opérationnelle à la conformité, non constitutive d'un conseil juridique. Documenter et revoir régulièrement chaque qualification.
+      <div class="src">Auria Advisory · 69 boulevard Haussmann, 75008 Paris, France · auria-advisory.fr</div>
+      <div class="src">Sources de référence : Commission européenne · info.gouv.fr · artificialintelligenceact.eu</div>
+      <div class="src" style="font-style:italic">Les renvois aux articles / annexes sont indicatifs ; en cas de doute, vérifier directement le texte du règlement et les lignes directrices applicables (mention « à confirmer »). © 2026 Auria Advisory.</div>
+    </footer>
+
+  </main>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ---------- Helpers ---------- */
+function show(id, html){const e=document.getElementById(id);e.innerHTML=html;e.classList.add('show');e.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function val(name){const el=document.querySelector('input[name="'+name+'"]:checked');return el?el.value:null;}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
+function resetTool(tool){
+  const root=document.querySelector('[data-tool="'+tool+'"]');
+  root.querySelectorAll('input').forEach(i=>i.checked=false);
+  const res=document.getElementById(tool+'-res');res.classList.remove('show');res.innerHTML='';
+}
+function copyResult(id){
+  const el=document.getElementById(id);
+  const txt=el.innerText.replace(/\n{3,}/g,'\n\n').trim();
+  navigator.clipboard.writeText(txt).then(()=>toast('Résultat copié ✓')).catch(()=>toast('Copie indisponible'));
+}
+function actionsBlock(id){
+  return '<div class="res-actions">'+
+    '<button class="btn-soft" onclick="copyResult(\''+id+'\')">⧉ Copier le résultat</button>'+
+    '<button class="btn-soft" onclick="window.print()">🖨️ Résumé imprimable</button></div>';
+}
+
+/* ---------- OUTIL 1 : Est-ce une IA ? ---------- */
+function evalT1(){
+  const v=['t1q1','t1q2','t1q3','t1q4'].map(val);
+  if(v.includes(null)){toast('Veuillez répondre aux 4 questions');return;}
+  const n=v.map(Number);
+  const tech=n[0]; const score=n.reduce((a,b)=>a+b,0); // max 8
+  let color,verdict,txt;
+  if(tech===0){
+    color='green';verdict='Probablement PAS un système d\'IA';
+    txt='Le système ne semble pas reposer sur des techniques d\'IA au sens de l\'art. 3, point 1. À ce stade, il ne relèverait pas du règlement — mais documentez ce constat et réévaluez en cas d\'évolution (ajout de composants d\'apprentissage, d\'inférence ou d\'autonomie).';
+  } else if(score>=6 && n[1]>=1 && n[2]>=1){
+    color='orange';verdict='Système d\'IA — qualification probable';
+    txt='Les caractéristiques clés sont réunies : techniques d\'IA, inférence de sorties (prédictions / recommandations / décisions / contenus) et un certain degré d\'autonomie. Le système entre vraisemblablement dans le champ du règlement : passez à l\'outil ② pour déterminer son niveau de risque.';
+  } else {
+    color='blue';verdict='Zone grise — à documenter';
+    txt='Certains critères de la définition sont présents mais d\'autres sont incertains. La qualification dépend de la finalité précise et de l\'architecture réelle. Documentez chaque critère (techniques employées, autonomie, nature des sorties) et faites valider la conclusion par un juriste.';
+  }
+  const map={green:'b-green',orange:'b-orange',blue:'b-blue'};
+  show('t1-res',
+    '<span class="verdict '+map[color]+'">'+verdict+'</span>'+
+    '<p>'+txt+'</p>'+
+    '<h5>Référence</h5><p>Art. 3, point 1 — définition du « système d\'IA ».</p>'+
+    '<p class="foot">Score indicatif '+score+'/8. Qualification à confirmer au regard de la définition exacte et des lignes directrices de la Commission.</p>'+
+    actionsBlock('t1-res'));
+}
+
+/* ---------- OUTIL 2 : Niveau de risque ---------- */
+function evalT2(){
+  const root=document.querySelector('[data-tool="t2"]');
+  const checked=[...root.querySelectorAll('input:checked')];
+  if(checked.length===0){toast('Cochez au moins un usage');return;}
+  const by=c=>checked.filter(i=>i.dataset.cat===c).map(i=>i.value);
+  const interdit=by('interdit'), haut=by('haut'), limite=by('limite');
+
+  let color,verdict,just,arts,points,reco;
+  if(interdit.length){
+    color='b-red';verdict='Risque inacceptable — Pratique potentiellement INTERDITE';
+    just='Usage(s) signalé(s) : '+interdit.join(' ; ')+'.';
+    arts='Article 5 (pratiques interdites).';
+    points='Sanctions maximales (jusqu\'à 35 M€ ou 7 % du CA). Réévaluer toute la chaîne de valeur.';
+    reco='<b>STOP</b> — ne pas mettre sur le marché ni utiliser en l\'état. Escalade immédiate vers le juridique et la direction conformité. Vérifier si une exception légale stricte s\'applique.';
+  } else if(haut.length){
+    color='b-orange';verdict='Haut risque — programme de conformité complet';
+    just='Domaine(s) de l\'annexe III concerné(s) : '+haut.join(' ; ')+'.';
+    arts='Art. 6 + annexe III, et obligations art. 8-15, 43, 49, 72.';
+    points='Gestion des risques, gouvernance des données, documentation technique, logs, contrôle humain, robustesse / cybersécurité, évaluation de conformité, enregistrement base UE, surveillance post-marché.';
+    reco='Mettre en place le <b>dispositif complet de conformité haut risque</b> et documenter chaque exigence (voir checklist ④). Examiner l\'exception art. 6 §3 (absence de risque significatif) — à justifier.';
+  } else if(limite.length){
+    color='b-blue';verdict='Risque limité — obligations de transparence';
+    just='Usage(s) concerné(s) : '+limite.join(' ; ')+'.';
+    arts='Article 50 (transparence).';
+    points='Informer la personne qu\'elle interagit avec une IA ; marquer / divulguer clairement le contenu synthétique ou les deepfakes.';
+    reco='Mettre en place les <b>mentions de transparence</b> et le marquage des contenus générés. Charge de conformité modérée.';
+  } else {
+    color='b-green';verdict='Risque minimal — aucune obligation spécifique';
+    just='Aucun usage interdit, haut risque ou de transparence signalé.';
+    arts='Hors annexe III et hors art. 5 / 50.';
+    points='Codes de conduite volontaires et bonnes pratiques encouragés.';
+    reco='Maintenir une <b>veille</b> et de bonnes pratiques. Réévaluer en cas de changement de finalité ou d\'usage.';
+  }
+  show('t2-res',
+    '<span class="verdict '+color+'">'+verdict+'</span>'+
+    '<h5>Justification</h5><p>'+just+'</p>'+
+    '<h5>Articles / annexes à vérifier</h5><p>'+arts+'</p>'+
+    '<h5>Points d\'attention conformité</h5><p>'+points+'</p>'+
+    '<div class="reco">💡 <b>Recommandation :</b> '+reco+'</div>'+
+    '<p class="foot">Catégorie retenue : la plus contraignante parmi vos réponses. Qualification à confirmer au regard de la finalité précise et de l\'annexe III.</p>'+
+    actionsBlock('t2-res'));
+}
+
+/* ---------- OUTIL 3 : Fournisseur / déployeur ---------- */
+function evalT3(){
+  const v={};['t3q1','t3q2','t3q3','t3q4','t3q5'].forEach(q=>v[q]=val(q));
+  if(Object.values(v).includes(null)){toast('Veuillez répondre aux 5 questions');return;}
+  const dev=v.t3q1==='oui', soustrait=v.t3q2==='oui', marque=v.t3q3==='oui', utilise=v.t3q4==='oui', modif=v.t3q5==='oui';
+
+  let color,verdict,txt,arts;
+  if(marque || dev || soustrait){
+    color='b-orange';verdict='Rôle probable : FOURNISSEUR';
+    txt='Vous développez (ou faites développer) le système et / ou le mettez sur le marché sous votre nom ou votre marque. Vous portez les obligations du fournisseur : gestion des risques, documentation technique, évaluation de conformité, marquage CE, enregistrement base UE, surveillance post-marché.';
+    arts='Art. 3 (définition du fournisseur), art. 16 et art. 8-15, 43, 49, 72.';
+  } else if(modif){
+    color='b-orange';verdict='Bascule de rôle : vous devenez FOURNISSEUR (art. 25)';
+    txt='Une modification substantielle, un changement de finalité, ou l\'apposition de votre nom sur un système haut risque existant vous fait endosser les obligations du fournisseur pour la partie concernée.';
+    arts='Art. 25 (bascule de rôle) — puis obligations fournisseur.';
+  } else if(utilise){
+    color='b-blue';verdict='Rôle probable : DÉPLOYEUR';
+    txt='Vous utilisez un système d\'IA sous votre autorité, dans un cadre professionnel, sans le commercialiser sous votre nom. Vous portez les obligations du déployeur : usage conforme aux instructions, contrôle humain, surveillance, conservation des journaux, information des personnes, et le cas échéant analyse d\'impact droits fondamentaux (outil ⑤).';
+    arts='Art. 3 (définition du déployeur) et art. 26-27.';
+  } else {
+    color='b-blue';verdict='Rôle à préciser';
+    txt='Vos réponses ne permettent pas de trancher clairement. Précisez le mode d\'acquisition et d\'exploitation du système, puis confirmez avec un juriste. Importateur, distributeur et mandataire ont par ailleurs des régimes propres.';
+    arts='Art. 3 — ensemble des définitions d\'acteurs.';
+  }
+  show('t3-res',
+    '<span class="verdict '+color+'">'+verdict+'</span>'+
+    '<p>'+txt+'</p>'+
+    '<h5>Référence</h5><p>'+arts+'</p>'+
+    '<p class="foot">Un même acteur peut cumuler des rôles. Importateurs, distributeurs et mandataires ont des régimes propres (à confirmer selon la chaîne d\'approvisionnement).</p>'+
+    actionsBlock('t3-res'));
+}
+
+/* ---------- OUTIL 4 : Checklist maturité ---------- */
+function evalT4(){
+  const boxes=[...document.querySelectorAll('[data-tool="t4"] input[type=checkbox]')];
+  const total=boxes.length;
+  const done=boxes.filter(b=>b.checked).length;
+  const pct=Math.round(done/total*100);
+  let color,level,txt;
+  if(pct>=90){color='var(--green)';level='Mature / conforme';txt='Le dispositif est quasi complet. Maintenez la documentation à jour et la surveillance post-marché.';}
+  else if(pct>=70){color='#8FA63B';level='Avancé';txt='La majorité des exigences sont couvertes. Priorisez la clôture des écarts restants avant tout déploiement à enjeu.';}
+  else if(pct>=40){color='var(--orange)';level='Partiel / en cours';txt='Plusieurs briques clés manquent. Établissez un plan d\'action priorisé sur les exigences non documentées.';}
+  else{color='var(--red)';level='Initial / à structurer';txt='Le dispositif de conformité haut risque est insuffisant. Risque élevé en cas de contrôle : structurer un programme complet est prioritaire.';}
+
+  const missing=boxes.filter(b=>!b.checked).map(b=>b.parentElement.innerText.trim());
+  let miss='';
+  if(missing.length){miss='<h5>Exigences à traiter</h5><p>'+missing.join(' · ')+'</p>';}
+
+  show('t4-res',
+    '<span class="verdict" style="background:'+color+'22;color:'+color+'">Maturité : '+level+'</span>'+
+    '<p><b>'+done+' / '+total+'</b> exigences documentées — <b>'+pct+'%</b></p>'+
+    '<div class="bar"><i style="width:'+pct+'%;background:'+color+'"></i></div>'+
+    '<p>'+txt+'</p>'+miss+
+    '<p class="foot">Auto-évaluation indicative (art. 8-15, 43, 49, 72, 73). Ne se substitue pas à une évaluation de conformité formelle.</p>'+
+    actionsBlock('t4-res'));
+}
+
+/* ---------- OUTIL 5 : AIDF / FRIA ---------- */
+function evalT5(){
+  const v={};['t5q1','t5q2','t5q3','t5q4','t5q5'].forEach(q=>v[q]=val(q));
+  if(Object.values(v).includes(null)){toast('Veuillez répondre aux 5 questions');return;}
+  let risk=0;
+  if(v.t5q1==='oui')risk++;
+  if(v.t5q2==='oui')risk++;
+  if(v.t5q3==='oui')risk++;
+  if(v.t5q4==='oui')risk+=2; else if(v.t5q4==='incertain')risk++;
+  const noHumain = v.t5q5==='non';
+  if(noHumain)risk++;
+
+  let color,verdict,txt,reco;
+  if(risk>=4 || (risk>=2 && noHumain)){
+    color='b-orange';verdict='Analyse RECOMMANDÉE';
+    txt='Plusieurs facteurs de risque sont présents'+(noHumain?' et le contrôle humain n\'est pas documenté':'')+'. Une analyse, même allégée, est prudente.';
+    reco='Documenter une <b>analyse d\'impact proportionnée</b>, formaliser le contrôle humain et tester les biais avant déploiement.';
+  } else if(risk>=2){
+    color='b-blue';verdict='Analyse à examiner';
+    txt='Quelques facteurs de risque sont présents. Le besoin d\'AIDF dépend du type de déployeur et de la finalité exacte.';
+    reco='Tracer une <b>analyse préliminaire</b> et la décision (réaliser / ne pas réaliser l\'AIDF), avec justification documentée.';
+  } else {
+    color='b-green';verdict='Analyse a priori non requise';
+    txt='Peu de facteurs de risque identifiés. Une AIDF formelle ne semble pas requise en l\'état.';
+    reco='Conserver une <b>trace de l\'évaluation</b> et réévaluer en cas de changement d\'usage, de public visé ou de finalité.';
+  }
+  show('t5-res',
+    '<span class="verdict '+color+'">'+verdict+'</span>'+
+    '<p>'+txt+'</p>'+
+    '<div class="reco">💡 <b>Recommandation :</b> '+reco+'</div>'+
+    '<p class="foot">Réf. art. 27 (analyse d\'impact sur les droits fondamentaux par les déployeurs). L\'obligation exacte dépend du type de déployeur et du système — à confirmer au cas par cas. Ne dispense pas d\'une AIPD au titre du RGPD le cas échéant.</p>'+
+    actionsBlock('t5-res'));
+}
+
+/* ====================================================================
+   ARBRE DE DÉCISION — ANNEXE III / ANNEXE I / DÉROGATION art. 6 §3
+   ==================================================================== */
+const TREE_NODES = {
+  q_ann1:{
+    step:'Étape 1 — Annexe I',
+    q:'Le système est-il un produit — ou un composant de sécurité d\'un produit — couvert par la législation d\'harmonisation de l\'UE (annexe I) ?',
+    help:'Ex. machines, dispositifs médicaux, jouets, ascenseurs, équipements radio, véhicules, etc.',
+    opts:[['Oui','r_annexe1'],['Non','q_dom']]
+  },
+  q_dom:{
+    step:'Étape 2 — Domaines annexe III',
+    q:'Le système relève-t-il de l\'un des domaines de l\'annexe III ?',
+    help:'Sélectionnez le domaine principal concerné par la finalité du système.',
+    opts:[
+      ['Biométrie (identification, catégorisation, émotions)','q_bio'],
+      ['Infrastructures critiques (énergie, eau, transport…)','q_profil'],
+      ['Éducation et formation professionnelle','q_profil'],
+      ['Emploi, gestion des travailleurs, accès à l\'emploi','q_profil'],
+      ['Services essentiels, crédit / solvabilité, assurance','q_profil'],
+      ['Répression (forces de l\'ordre)','q_profil'],
+      ['Migration, asile, contrôles aux frontières','q_profil'],
+      ['Justice / processus démocratiques','q_profil'],
+      ['Aucun de ces domaines','r_non_aiii']
+    ]
+  },
+  q_bio:{
+    step:'Étape 2b — Usage biométrique',
+    q:'Quel est l\'usage biométrique précis ?',
+    help:'Certains usages biométriques sont interdits (art. 5), d\'autres relèvent du haut risque (annexe III).',
+    opts:[
+      ['Identification à distance en temps réel (espace public, répression), catégorisation selon des caractéristiques sensibles, ou reconnaissance des émotions au travail / à l\'école','r_interdit'],
+      ['Identification a posteriori, vérification d\'identité, ou autre catégorisation autorisée','q_profil']
+    ]
+  },
+  q_profil:{
+    step:'Étape 3 — Dérogation (art. 6 §3)',
+    q:'Le système effectue-t-il un profilage de personnes physiques ?',
+    help:'Profilage = évaluation automatisée d\'aspects personnels (comportement, situation économique, santé, déplacements…). S\'il y a profilage, aucune dérogation n\'est possible.',
+    opts:[['Oui','r_haut_profil'],['Non','q_derog']]
+  },
+  q_derog:{
+    step:'Étape 3b — Conditions de dérogation',
+    q:'Le système se limite-t-il à l\'un de ces cas (art. 6 §3) ?',
+    help:'(a) tâche procédurale étroite ; (b) amélioration du résultat d\'une activité humaine déjà réalisée ; (c) détection de schémas / écarts sans remplacer ni influencer l\'évaluation humaine, avec revue humaine ; (d) tâche préparatoire à une évaluation.',
+    opts:[['Oui — l\'un de ces cas s\'applique','r_derog'],['Non — aucun de ces cas','r_haut_aiii']]
+  }
+};
+const TREE_RESULTS = {
+  r_annexe1:{cls:'b-orange',short:'Haut risque (annexe I)',verdict:'HAUT RISQUE — annexe I',
+    body:'Le système est (ou est un composant de sécurité d\') un produit déjà couvert par une législation d\'harmonisation de l\'UE. Il est classé haut risque au titre de l\'art. 6 §1 + annexe I.',
+    arts:'Art. 6 §1, annexe I, et obligations art. 8-15, évaluation de conformité sectorielle (art. 43).',
+    reco:'Mettre en place le <b>dispositif complet haut risque</b> et l\'articuler avec la procédure d\'évaluation de conformité sectorielle. Application : <b>2 août 2027</b> pour l\'annexe I.'},
+  r_haut_aiii:{cls:'b-orange',short:'Haut risque (annexe III)',verdict:'HAUT RISQUE — annexe III',
+    body:'Le système relève d\'un domaine de l\'annexe III et aucune des conditions de dérogation de l\'art. 6 §3 ne s\'applique.',
+    arts:'Art. 6 §2, annexe III, obligations art. 8-15, 43, 49, 72.',
+    reco:'Déployer le <b>programme de conformité haut risque complet</b> (voir checklist ④) et documenter chaque exigence. Application : <b>2 août 2026</b> pour l\'annexe III.'},
+  r_haut_profil:{cls:'b-orange',short:'Haut risque (profilage)',verdict:'HAUT RISQUE — profilage',
+    body:'Le système relève de l\'annexe III et effectue un profilage de personnes physiques : la dérogation de l\'art. 6 §3 est expressément exclue dans ce cas.',
+    arts:'Art. 6 §3 (dernier alinéa — exclusion en cas de profilage), annexe III.',
+    reco:'Le régime haut risque s\'applique <b>sans dérogation possible</b>. Déployer le dispositif complet et porter une attention particulière aux biais et au contrôle humain.'},
+  r_derog:{cls:'b-green',short:'Dérogation art. 6 §3',verdict:'Dérogation art. 6 §3 — a priori NON haut risque',
+    body:'Le système figure à l\'annexe III mais ne présente pas de risque significatif au sens de l\'art. 6 §3 (tâche étroite / préparatoire / amélioration d\'une activité humaine, sans profilage). Il n\'est a priori pas classé haut risque.',
+    arts:'Art. 6 §3 (dérogation) et art. 6 §4 (obligation de documentation et d\'enregistrement).',
+    reco:'<b>Documenter l\'évaluation</b> justifiant la dérogation et <b>enregistrer le système dans la base UE</b> (art. 6 §4). La dérogation doit être tracée et revue : à faire valider par un juriste.'},
+  r_non_aiii:{cls:'b-green',short:'Hors annexe III',verdict:'Non haut risque au titre de l\'annexe III',
+    body:'Le système ne relève d\'aucun domaine de l\'annexe III ni de l\'annexe I.',
+    arts:'Hors art. 6 / annexes I et III.',
+    reco:'Vérifier les <b>obligations de transparence (art. 50)</b> — chatbots, contenus générés ; à défaut, le système relève du <b>risque minimal</b>. Documenter le constat et réévaluer en cas de changement de finalité.'},
+  r_interdit:{cls:'b-red',short:'Pratique interdite (art. 5)',verdict:'Pratique potentiellement INTERDITE (art. 5)',
+    body:'L\'usage biométrique décrit relève des pratiques interdites (identification biométrique à distance en temps réel à des fins répressives, catégorisation selon des caractéristiques sensibles, ou reconnaissance des émotions au travail / à l\'école).',
+    arts:'Article 5 (pratiques interdites).',
+    reco:'<b>STOP</b> — ne pas mettre sur le marché ni utiliser en l\'état. Escalade immédiate vers le juridique. Vérifier si une exception légale stricte s\'applique. Voir aussi l\'outil ②.'}
+};
+
+let wizHistory=[];
+let wizResult=null;
+
+function wizRender(nodeKey){
+  const node=TREE_NODES[nodeKey];
+  const card=document.getElementById('wiz-card');
+  let opts=node.opts.map(o=>'<button class="wiz-opt" onclick="wizPick(\''+o[1]+'\')">'+o[0]+'</button>').join('');
+  card.innerHTML='<div class="wiz-step">'+node.step+'</div>'+
+    '<p class="wiz-q">'+node.q+'</p>'+
+    (node.help?'<p class="wiz-help">'+node.help+'</p>':'')+
+    '<div class="wiz-opts">'+opts+'</div>';
+  document.getElementById('wiz-back').style.display = wizHistory.length>0 ? 'inline-block':'none';
+  wizBread(nodeKey);
+}
+function wizBread(curKey){
+  const labels={q_ann1:'Annexe I',q_dom:'Annexe III',q_bio:'Biométrie',q_profil:'Profilage',q_derog:'Dérogation'};
+  const path=[...wizHistory,curKey].filter(k=>TREE_NODES[k]);
+  document.getElementById('wiz-bread').innerHTML=path.map((k,i)=>
+    '<span class="'+(i===path.length-1?'cur':'')+'">'+(labels[k]||k)+'</span>').join('');
+}
+function wizPick(next){
+  const cur=wizCurrent();
+  wizHistory.push(cur);
+  if(TREE_RESULTS[next]) wizShowResult(next);
+  else wizRender(next);
+}
+function wizCurrent(){
+  // derive current node from card content marker — track via closure instead
+  return window.__wizCur || 'q_ann1';
+}
+// override render to track current
+const _wizRender=wizRender;
+wizRender=function(k){window.__wizCur=k;_wizRender(k);};
+function wizShowResult(key){
+  window.__wizCur=key;
+  const r=TREE_RESULTS[key];
+  wizResult=r.short;
+  const card=document.getElementById('wiz-card');
+  card.innerHTML=
+    '<div class="wiz-result">'+
+      '<span class="verdict '+r.cls+'">'+r.verdict+'</span>'+
+      '<p>'+r.body+'</p>'+
+      '<h5>Références</h5><p>'+r.arts+'</p>'+
+      '<div class="reco">💡 <b>Recommandation :</b> '+r.reco+'</div>'+
+      '<p class="foot">Résultat indicatif fondé sur vos réponses. La qualification définitive dépend de la finalité précise et doit être validée par un juriste. Ce résultat est repris dans la fiche de qualification.</p>'+
+      '<div class="res-actions"><button class="btn-soft" onclick="document.getElementById(\'certificat\').scrollIntoView({behavior:\'smooth\'})">▣ Reporter dans la fiche</button></div>'+
+    '</div>';
+  document.getElementById('wiz-bread').innerHTML='';
+  document.getElementById('wiz-back').style.display='inline-block';
+}
+function wizBack(){
+  if(wizHistory.length===0)return;
+  wizResult=null;
+  const prev=wizHistory.pop();
+  wizRender(prev);
+}
+function wizReset(){wizHistory=[];wizResult=null;wizRender('q_ann1');}
+wizReset();
+
+/* ====================================================================
+   FICHE DE QUALIFICATION / CERTIFICAT
+   ==================================================================== */
+function readVerdict(id){
+  const el=document.querySelector('#'+id+' .verdict');
+  return el?el.textContent.trim():null;
+}
+function escapeHtml(s){return (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function orgWordmark(org){
+  if(org.toLowerCase()==='auria advisory') return 'Auria <i>Advisory</i>';
+  return escapeHtml(org);
+}
+function fmtDate(iso){
+  if(!iso)return '—';
+  const d=new Date(iso+'T00:00:00');
+  if(isNaN(d))return iso;
+  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+}
+function badgeFor(txt){
+  if(!txt)return '';
+  const t=txt.toLowerCase();
+  let cls='b-green';
+  if(t.includes('interdit')||t.includes('inacceptable'))cls='b-red';
+  else if(t.includes('haut risque'))cls='b-orange';
+  else if(t.includes('limité')||t.includes('transparence'))cls='b-blue';
+  return cls;
+}
+let lastRoadmap=null;
+function invalidateDerivedOutputs(){
+  lastRoadmap=null;
+  const rr=document.getElementById('roadmap-res');
+  if(rr){rr.classList.remove('show');rr.innerHTML='';}
+  const cg=document.getElementById('cert-guard');
+  if(cg){cg.classList.remove('show');cg.innerHTML='';}
+  const cd=document.getElementById('certificat-doc');
+  if(cd){cd.classList.remove('show');cd.innerHTML='';}
+}
+function getUncheckedChecklistItems(limit){
+  return [...document.querySelectorAll('[data-tool="t4"] input[type=checkbox]')]
+    .filter(b=>!b.checked)
+    .map(b=>b.parentElement.innerText.replace(/\s+/g,' ').trim())
+    .filter(Boolean)
+    .slice(0,limit||6);
+}
+function getMinimalReadiness(snapshot){
+  const g=id=>{const el=document.getElementById(id);return el?el.value.trim():'';};
+  const missing=[];
+  if(snapshot.isAI==='Non évalué') missing.push('Compléter l’outil ① « Est-ce une IA ? ».');
+  if(snapshot.risque==='Non évalué' && snapshot.arbre==='Non parcouru') missing.push('Compléter l’outil ② « Niveau de risque » ou l’arbre annexe III.');
+  if(snapshot.role==='Non évalué') missing.push('Compléter l’outil ③ « Fournisseur / déployeur ».');
+  if(!g('cf-sys')) missing.push('Renseigner le nom du système d’IA dans la fiche.');
+  if(!g('cf-fin')) missing.push('Renseigner la finalité / description du système.');
+  return {ok:missing.length===0, missing};
+}
+function showCertGuard(missing){
+  const guard=document.getElementById('cert-guard');
+  if(!guard) return;
+  guard.innerHTML='<strong>Génération bloquée.</strong> Le socle minimal n’est pas encore complété pour produire une fiche de qualification exploitable.'+
+    '<ul>'+missing.map(m=>'<li>'+escapeHtml(m)+'</li>').join('')+'</ul>';
+  guard.classList.add('show');
+}
+function hideCertGuard(){
+  const guard=document.getElementById('cert-guard');
+  if(!guard) return;
+  guard.classList.remove('show');
+  guard.innerHTML='';
+}
+function roadmapPriorityClass(priority){
+  if(priority==='Haute') return 'p-high';
+  if(priority==='Moyenne') return 'p-medium';
+  return 'p-low';
+}
+function getEvaluationSnapshot(){
+  const horizon=parseInt((document.getElementById('rm-horizon')||{}).value||'180',10);
+  const mode=(document.getElementById('rm-mode')||{}).value||'balanced';
+  const isAI=readVerdict('t1-res')||'Non évalué';
+  const risque=readVerdict('t2-res')||'Non évalué';
+  const role=readVerdict('t3-res')||'Non évalué';
+  const matur=readVerdict('t4-res')||'Non évaluée';
+  const aidf=readVerdict('t5-res')||'Non évalué';
+  const arbre=wizResult||'Non parcouru';
+  const dominant=(risque!=='Non évalué'?risque:arbre).toLowerCase();
+  return {horizon,mode,isAI,risque,role,matur,aidf,arbre,dominant,missing:getUncheckedChecklistItems(6)};
+}
+function roadmapRiskLabel(snapshot){
+  const d=snapshot.dominant;
+  if(d.includes('interdit')||d.includes('inacceptable')) return 'pratique interdite';
+  if(d.includes('haut risque')) return 'haut risque';
+  if(d.includes('dérogation')) return 'dérogation article 6 §3';
+  if(d.includes('limité')||d.includes('transparence')) return 'transparence';
+  if((snapshot.isAI||'').toLowerCase().includes('non ia')) return 'hors périmètre IA Act';
+  return 'risque minimal';
+}
+function buildRoadmap(snapshot){
+  const phases=[
+    {kicker:'Phase 1', title:'0-30 jours', summary:'Sécuriser la qualification, geler les angles morts et nommer les responsables.', tasks:[]},
+    {kicker:'Phase 2', title:'30-90 jours', summary:'Produire les mesures de conformité et les preuves associées.', tasks:[]},
+    {kicker:'Phase 3', title:snapshot.horizon<=90?'Jusqu\'à 90 jours':'90-'+snapshot.horizon+' jours', summary:'Boucler la mise en exploitation, les contrôles et l\'amélioration continue.', tasks:[]}
+  ];
+  const streams=[];
+  const chips=[
+    'Risque: '+roadmapRiskLabel(snapshot),
+    'Rôle: '+snapshot.role.replace('Rôle probable : ','').replace('Bascule de rôle : vous devenez ',''),
+    'Horizon: '+(snapshot.horizon===365?'12 mois':snapshot.horizon+' jours')
+  ];
+  const addTask=(i,title,owner,priority,deliverable,detail)=>{
+    if(!title) return;
+    const key=[title,owner,priority,deliverable].join('|');
+    if(phases[i].tasks.some(t=>t.key===key)) return;
+    phases[i].tasks.push({key,title,owner,priority,deliverable,detail});
+  };
+  const d=snapshot.dominant;
+  let headline='Roadmap automatique générée à partir des évaluations déjà réalisées.';
+  let focus='Priorité à confirmer avec les responsables métier, juridique, conformité et sécurité.';
+
+  if(d.includes('interdit')||d.includes('inacceptable')){
+    headline='Le scénario ressemble à une pratique interdite au sens de l\'article 5 : la roadmap vise d\'abord l\'arrêt du risque.';
+    focus='Objectif démonstrateur : montrer une réaction de containment, de redesign et d\'escalade juridique.';
+    addTask(0,'Suspendre le cas d’usage ou sa démonstration externe','Direction métier / conformité','Haute','Décision de gel formalisée','Éviter toute présentation comme usage acceptable tant que la qualification n’est pas levée.');
+    addTask(0,'Lancer une revue juridique article 5','Juridique / conformité','Haute','Note go / no-go signée','Inclure finalité, personnes concernées et analyse d’éventuelles exceptions.');
+    addTask(1,'Concevoir un scénario de redesign','Produit / métier','Haute','Scénario cible hors pratique interdite','Repenser la proposition de valeur sans fonctionnalité prohibée.');
+    addTask(1,'Tracer les écarts et le plan de retrait','PMO / contrôle interne','Moyenne','Registre des écarts et plan d’action','Préparer si besoin le retrait du cas d’usage.');
+    addTask(2,'Installer un verrou de gouvernance','Contrôle interne / PMO','Moyenne','Point de contrôle projet','Empêcher la réapparition du cas d’usage dans le pipeline.');
+    streams.push(['Juridique / éthique','Décision d\'arrêt, analyse d\'exceptions, validation de la cible de redesign.']);
+    streams.push(['Produit / métier','Repenser la proposition de valeur sans fonctionnalité prohibée.']);
+  } else if(d.includes('haut risque')){
+    headline='Le scénario est orienté haut risque : la roadmap cible la mise en place d\'un dispositif AI Act complet et démontrable.';
+    focus='Objectif démonstrateur : faire apparaître une trajectoire crédible de conformité, de preuve et de gouvernance.';
+    addTask(0,'Confirmer le périmètre et la finalité du système','Produit / métier','Haute','Note de périmètre validée','Version, frontières du système et composants non IA inclus.');
+    addTask(0,'Nommer la gouvernance AI Act','Direction / conformité','Haute','RACI AI Act','Identifier sponsor, responsable conformité, juridique, métier, data et sécurité.');
+    addTask(0,'Réaliser un gap assessment articles 8 à 15','Conformité / contrôle interne','Haute','Matrice d’écarts priorisée','Mesurer les manques critiques et leur criticité.');
+    addTask(1,'Formaliser la gestion des risques et le plan de tests','Risk / produit / data','Haute','Risk register et plan de tests','Définir critères d’acceptation, scénarios de défaillance et seuils.');
+    addTask(1,'Mettre en place la gouvernance des données','Data / IA / conformité','Haute','Politique data et preuves de contrôle','Qualité, biais, traçabilité et critères de représentativité.');
+    addTask(1,'Constituer le dossier de preuve','Conformité produit','Haute','Documentation technique et preuves','Documentation, logs, information utilisateur et contrôle humain.');
+    addTask(2,'Préparer la conformité ex ante et l’enregistrement','Juridique / conformité produit','Moyenne','Dossier de conformité et base UE','Préparer évaluation de conformité, marquage et enregistrement.');
+    addTask(2,'Définir le dispositif de run et de surveillance','Run / contrôle interne','Moyenne','Plan de monitoring et incidents','Surveillance post-marché, incidents, revues périodiques.');
+    streams.push(['Conformité produit','Gestion des risques, dossier de preuve, conformité articles 8 à 15 et article 43.']);
+    streams.push(['Run / contrôle interne','Journalisation, supervision humaine, incidents, audits et revues récurrentes.']);
+  } else if(d.includes('dérogation')){
+    headline='Le scénario semble relever d\'une dérogation de l\'article 6 §3 : la roadmap vise surtout la robustesse de la justification.';
+    focus='Objectif démonstrateur : montrer que la non-classification haut risque repose sur des preuves et une revue régulière.';
+    addTask(0,'Documenter la justification de dérogation','Juridique / conformité','Haute','Mémo article 6 §3','Décrire la tâche étroite, préparatoire ou d’assistance humaine.');
+    addTask(0,'Tracer l’absence de profilage et la revue humaine','Métier / produit','Haute','Preuves de supervision humaine','Montrer que le système n’influence pas seul l’évaluation humaine.');
+    addTask(1,'Constituer le dossier de preuve','Conformité / PMO','Moyenne','Dossier de justification archivé','Préparer validation juridique de la position retenue.');
+    addTask(1,'Préparer l’enregistrement et la requalification','Conformité produit','Moyenne','Fiche d’enregistrement et critères de requalification','Prévoir le basculement si la finalité évolue.');
+    addTask(2,'Planifier une revue périodique','Contrôle interne','Moyenne','Calendrier de revue','Relancer la revue à chaque changement de données, d’usage ou de modèle.');
+    streams.push(['Juridique / conformité','Justification article 6 §3, dossier de preuve, validation et archivage.']);
+    streams.push(['Métier / produit','Suivi des changements fonctionnels pouvant faire basculer en haut risque.']);
+  } else if(d.includes('limité')||d.includes('transparence')){
+    headline='Le scénario appelle surtout des obligations de transparence : la remédiation est légère mais doit être visible.';
+    focus='Objectif démonstrateur : matérialiser les messages utilisateurs, le marquage des contenus et la traçabilité des décisions.';
+    addTask(0,'Cartographier les points de transparence','Produit / UX','Haute','Carte des parcours à marquer','Lister tous les écrans et interactions nécessitant une information.');
+    addTask(0,'Valider le wording et le marquage','Juridique / UX','Haute','Kit de mentions approuvé','Fixer les messages utilisateur et la stratégie de marquage.');
+    addTask(1,'Implémenter les mentions et preuves d’affichage','Produit / design / dev','Moyenne','Parcours mis à jour','Intégrer mentions, libellés et capture de preuve.');
+    addTask(1,'Définir un contrôle qualité récurrent','QA / produit','Moyenne','Checklist de release','Vérifier la persistance des mentions après chaque évolution.');
+    addTask(2,'Intégrer la transparence au run','Produit / PMO','Basse','Exigence intégrée au cycle de release','Faire vivre ces contrôles dans la documentation opérationnelle.');
+    streams.push(['UX / produit','Mentions, parcours, compréhension utilisateur, qualité d\'affichage.']);
+    streams.push(['Conformité','Traçabilité des preuves de transparence et gouvernance des modèles génératifs.']);
+  } else {
+    headline='Le scénario paraît de risque minimal ou encore insuffisamment qualifié : la roadmap sert surtout à industrialiser la vigilance.';
+    focus='Objectif démonstrateur : installer une gouvernance légère, réutilisable et prête à monter en puissance.';
+    addTask(0,'Documenter le cas d’usage et ses dépendances','Métier / produit','Moyenne','Fiche cas d’usage','Décrire fournisseurs, données et décision de qualification.');
+    addTask(0,'Définir des critères de requalification','Conformité / produit','Moyenne','Critères de bascule formalisés','Prévoir les seuils de changement de finalité, autonomie et impact.');
+    addTask(1,'Mettre en place un inventaire IA','PMO / contrôle interne','Moyenne','Inventaire des cas d’usage','Créer un point de revue minimal avant mise en production.');
+    addTask(2,'Préparer un kit de montée en conformité','Conformité / PMO','Basse','Kit de conformité réutilisable','Accélérer la réponse si le système monte en criticité.');
+    streams.push(['Gouvernance','Inventaire, critères de requalification, comité léger de revue.']);
+    streams.push(['Produit','Conserver une documentation suffisante pour accélérer une future montée en conformité.']);
+  }
+
+  if((snapshot.role||'').includes('FOURNISSEUR')){
+    addTask(0,'Cadrer les obligations du fournisseur','Juridique / conformité produit','Haute','Cadre de responsabilités fournisseur','Préciser les interfaces avec les sous-traitants et la mise sur le marché.');
+    addTask(2,'Préparer le marquage et les obligations aval','Conformité produit','Moyenne','Plan CE et surveillance post-marché','Structurer les exigences si le cas y est soumis.');
+  } else if((snapshot.role||'').includes('DÉPLOYEUR')){
+    addTask(0,'Formaliser les obligations du déployeur','Métier / conformité','Haute','Règles d’usage et de supervision','Encadrer l’usage conforme et les responsabilités opérationnelles.');
+    addTask(1,'Organiser journaux, incidents et information','Run / conformité','Moyenne','Procédure opérationnelle déployeur','Couvrir conservation des journaux et information des personnes.');
+  }
+
+  if((snapshot.aidf||'').toLowerCase().includes('recommandée') || (snapshot.aidf||'').toLowerCase().includes('examiner')){
+    chips.push('AIDF/FRIA à traiter');
+    addTask(1,'Lancer l’analyse d’impact sur les droits fondamentaux','Juridique / conformité / métier','Haute','AIDF / FRIA documentée','Inclure scénarios de risques, mesures de réduction et articulation RGPD.');
+    streams.push(['Droits fondamentaux','AIDF / FRIA, articulation avec l\'AIPD RGPD si nécessaire, preuves de mitigation.']);
+  }
+
+  if((snapshot.matur||'').toLowerCase().includes('initial') || (snapshot.matur||'').toLowerCase().includes('à structurer')){
+    chips.push('Maturité faible');
+    addTask(0,'Prioriser les fondations de conformité','Direction projet / conformité','Haute','Plan de fondation validé','Ne pas industrialiser ni communiquer sans fondations suffisantes.');
+  }
+  if(snapshot.missing.length){
+    addTask(1,'Fermer les principaux écarts de checklist','Conformité / PMO','Haute','Top écarts traités','Priorité aux points suivants : '+snapshot.missing.slice(0,3).join(' ; ')+'.');
+  }
+
+  if(snapshot.mode==='risk'){
+    addTask(0,'Arbitrer les chantiers par le risque','Direction / conformité','Haute','Matrice de priorisation','Ordonner les travaux selon le risque de non-conformité et l’impact sur les personnes.');
+  } else if(snapshot.mode==='evidence'){
+    addTask(0,'Créer un dossier de preuves centralisé','PMO / conformité','Haute','Référentiel de preuves','Éviter une conformité seulement déclarative.');
+  } else {
+    addTask(1,'Piloter les chantiers en parallèle','PMO','Moyenne','Jalons mensuels et comité de suivi','Faire avancer preuve, produit et gouvernance ensemble.');
+  }
+
+  return {headline,focus,phases,streams,chips,snapshot};
+}
+function roadmapToHtml(model){
+  const chips=model.chips.map(c=>'<span class="roadmap-chip">'+escapeHtml(c)+'</span>').join('');
+  const phases=model.phases.map(phase=>
+    '<div class="roadmap-phase">'+
+      '<div class="phase-kicker">'+escapeHtml(phase.kicker)+'</div>'+
+      '<h4>'+escapeHtml(phase.title)+'</h4>'+
+      '<p>'+escapeHtml(phase.summary)+'</p>'+
+      '<div class="roadmap-tasks">'+phase.tasks.map(t=>
+        '<div class="roadmap-task">'+
+          '<h5>'+escapeHtml(t.title)+'</h5>'+
+          '<div class="roadmap-meta">'+
+            '<span class="meta-pill '+roadmapPriorityClass(t.priority)+'">Priorité '+escapeHtml(t.priority)+'</span>'+
+            '<span class="meta-pill">Owner '+escapeHtml(t.owner)+'</span>'+
+            '<span class="meta-pill">Livrable '+escapeHtml(t.deliverable)+'</span>'+
+          '</div>'+
+          '<p>'+escapeHtml(t.detail||'')+'</p>'+
+        '</div>').join('')+
+      '</div>'+
+    '</div>'
+  ).join('');
+  const streams=model.streams.map(s=>
+    '<div class="roadmap-stream"><h5>'+escapeHtml(s[0])+'</h5><p>'+escapeHtml(s[1])+'</p></div>'
+  ).join('');
+  return ''+
+    '<span class="verdict b-violet">Roadmap automatique prête</span>'+
+    '<div class="roadmap-summary">'+
+      '<p><strong>Cap visé.</strong> '+escapeHtml(model.headline)+'</p>'+
+      '<p><strong>Focus.</strong> '+escapeHtml(model.focus)+'</p>'+
+      '<div class="roadmap-chips">'+chips+'</div>'+
+    '</div>'+
+    '<div class="roadmap-grid">'+phases+'</div>'+
+    '<div class="roadmap-streams">'+streams+'</div>'+
+    '<p class="foot">Plan indicatif généré à partir des résultats présents dans le démonstrateur. Il doit être adapté au secteur, au rôle exact de l\'acteur et aux exigences de gouvernance internes.</p>'+
+    '<div class="res-actions">'+
+      '<button class="btn-soft" onclick="copyResult(\'roadmap-res\')">⧉ Copier la roadmap</button>'+
+      '<button class="btn-soft" onclick="document.getElementById(\'certificat\').scrollIntoView({behavior:\'smooth\'})">▣ Reprendre dans la fiche</button>'+
+    '</div>';
+}
+function docRoadmapHtml(model){
+  return '<div class="doc-note">'+escapeHtml(model.headline)+'</div>'+
+    '<div class="doc-roadmap">'+model.phases.map(phase=>
+      '<div class="item"><b>'+escapeHtml(phase.kicker+' — '+phase.title)+'</b><ul>'+
+      phase.tasks.slice(0,4).map(t=>'<li>'+escapeHtml(t.title)+'<div class="mini">Owner: '+escapeHtml(t.owner)+' · Priorité: '+escapeHtml(t.priority)+' · Livrable: '+escapeHtml(t.deliverable)+'</div></li>').join('')+
+      '</ul></div>'
+    ).join('')+'</div>';
+}
+function generateRoadmap(){
+  invalidateDerivedOutputs();
+  const model=buildRoadmap(getEvaluationSnapshot());
+  lastRoadmap=model;
+  show('roadmap-res', roadmapToHtml(model));
+}
+function resetRoadmap(){
+  invalidateDerivedOutputs();
+}
+function generateCert(){
+  const snapshot=getEvaluationSnapshot();
+  const readiness=getMinimalReadiness(snapshot);
+  if(!readiness.ok){
+    showCertGuard(readiness.missing);
+    toast('Socle minimal incomplet pour générer la fiche');
+    document.getElementById('certificat').scrollIntoView({behavior:'smooth',block:'start'});
+    return;
+  }
+  hideCertGuard();
+  const g=id=>document.getElementById(id).value.trim();
+  const org=g('cf-org')||'Organisation';
+  const ref=g('cf-ref')||'—';
+  const sys=g('cf-sys')||'(non renseigné)';
+  const fin=g('cf-fin')||'(non renseignée)';
+  const date=document.getElementById('cf-date').value;
+
+  const isAI = readVerdict('t1-res');
+  const risque = readVerdict('t2-res');
+  const role = readVerdict('t3-res');
+  const matur = readVerdict('t4-res');
+  const aidf = readVerdict('t5-res');
+  const arbre = wizResult;
+  const roadmap = buildRoadmap(snapshot);
+  lastRoadmap = roadmap;
+
+  // synthèse obligations selon le risque dominant
+  const dominant = (risque||arbre||'').toLowerCase();
+  let synth;
+  if(dominant.includes('interdit')||dominant.includes('inacceptable'))
+    synth='Pratique potentiellement interdite (art. 5) : ne pas mettre sur le marché ni utiliser en l\'état. Escalade juridique immédiate.';
+  else if(dominant.includes('haut risque'))
+    synth='Régime haut risque : gestion des risques (art. 9), gouvernance des données (art. 10), documentation technique (art. 11), journalisation (art. 12), transparence (art. 13), contrôle humain (art. 14), robustesse / cybersécurité (art. 15), évaluation de conformité (art. 43), enregistrement base UE (art. 49), surveillance post-marché (art. 72).';
+  else if(dominant.includes('limité')||dominant.includes('transparence'))
+    synth='Obligations de transparence (art. 50) : informer la personne qu\'elle interagit avec une IA et marquer les contenus synthétiques.';
+  else if(dominant.includes('dérogation'))
+    synth='Dérogation art. 6 §3 retenue : documenter l\'évaluation et enregistrer le système (art. 6 §4). Aucune obligation haut risque, sous réserve de validation juridique.';
+  else
+    synth='Risque minimal a priori : aucune obligation spécifique. Codes de conduite volontaires encouragés. Réévaluer en cas de changement d\'usage.';
+
+  const row=(k,v,badge)=> v ?
+    '<tr><th>'+k+'</th><td>'+(badge?'<span class="doc-badge '+badgeFor(v)+'">'+escapeHtml(v)+'</span>':escapeHtml(v))+'</td></tr>' : '';
+
+  const today=new Date().toLocaleDateString('fr-FR');
+  const doc=document.getElementById('certificat-doc');
+  const isAuria = org.toLowerCase()==='auria advisory';
+  doc.innerHTML=
+    '<div class="doc-head">'+
+      '<div class="brandwrap">'+
+        '<div class="deco"></div>'+
+        '<div class="wm">'+escapeHtml(org)+'</div>'+
+        (isAuria?'<div class="tagline">Consulting That Makes Sense</div>':'')+
+      '</div>'+
+      '<div class="ref"><b>Réf.</b> '+escapeHtml(ref)+'<br><b>Date</b> '+fmtDate(date)+'</div>'+
+    '</div>'+
+    '<p class="doc-title">Fiche de qualification d\'un système d\'IA</p>'+
+    '<p class="doc-subtitle">Qualification au titre du Règlement (UE) 2024/1689 (AI Act) — document de travail, aide à la qualification, non constitutif d\'un conseil juridique.</p>'+
+
+    '<div class="doc-sec"><h4>Système évalué</h4>'+
+      '<dl class="doc-kv">'+
+        '<dt>Désignation</dt><dd>'+escapeHtml(sys)+'</dd>'+
+        '<dt>Finalité / périmètre</dt><dd>'+escapeHtml(fin)+'</dd>'+
+      '</dl></div>'+
+
+    '<div class="doc-sec"><h4>Résultats de la qualification</h4>'+
+      '<table class="doc-tbl"><tbody>'+
+        row('Statut « système d\'IA » (art. 3)', isAI||'Non évalué')+
+        row('Niveau de risque (art. 5 / 6 / 50)', risque||'Non évalué', true)+
+        row('Arbre annexe III (art. 6)', arbre||'Non parcouru', true)+
+        row('Rôle (art. 3 / 25)', role||'Non évalué')+
+        row('Maturité conformité (art. 8-15)', matur||'Non évaluée')+
+        row('Besoin d\'AIDF (art. 27)', aidf||'Non évalué')+
+      '</tbody></table></div>'+
+
+    '<div class="doc-sec"><h4>Synthèse des obligations</h4>'+
+      '<div class="doc-note">'+synth+'</div></div>'+
+
+    '<div class="doc-sec"><h4>Roadmap de remédiation priorisée</h4>'+
+      docRoadmapHtml(roadmap)+'</div>'+
+
+    '<div class="doc-sec"><h4>Hypothèses et limites</h4>'+
+      '<div class="doc-note">Cette fiche V1 est fondée sur les réponses saisies, des règles indicatives et un périmètre de démonstration. Elle ne constitue ni un avis juridique, ni un diagnostic exhaustif.</div>'+
+      '<div class="doc-note">Le résultat suppose que les informations fournies sont exactes, que le cas d’usage réel correspond au périmètre décrit, et que les situations GPAI, importateur, distributeur, mandataire ou sectorielles complexes font l’objet d’une revue complémentaire.</div></div>'+
+
+    '<div class="doc-sec"><h4>Validation et signatures</h4>'+
+      '<div class="doc-sign">'+
+        signBox('Rédigé par', g('cf-red-nom'), g('cf-red-fonc'), date)+
+        signBox('Validé par (juridique / conformité)', g('cf-val-nom'), g('cf-val-fonc'), date)+
+      '</div></div>'+
+
+    '<div class="doc-foot">'+
+      '<div class="addr"><b>'+escapeHtml(org)+'</b> — 69 boulevard Haussmann, 75008 Paris, France · <i>Consulting That Makes Sense</i></div>'+
+      'Document généré le '+today+' à l\'aide de l\'outil de qualification Règlement (UE) 2024/1689. '+
+      'Les renvois aux articles et annexes sont indicatifs. Toute qualification doit être documentée, validée par un juriste et revue régulièrement. '+
+      'Ce document ne dispense pas, le cas échéant, d\'une analyse d\'impact relative à la protection des données (RGPD).</div>';
+
+  doc.classList.add('show');
+  doc.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function signBox(role,nom,fonc,date){
+  return '<div class="box"><div class="role">'+role+'</div>'+
+    '<div class="line"><span>Nom :</span> '+(escapeHtml(nom)||'……………………………')+'</div>'+
+    '<div class="line"><span>Fonction :</span> '+(escapeHtml(fonc)||'……………………………')+'</div>'+
+    '<div class="line"><span>Date :</span> '+(date?fmtDate(date):'……………………………')+'</div>'+
+    '<div class="sig">Signature / tampon</div></div>';
+}
+function exportCert(){
+  const doc=document.getElementById('certificat-doc');
+  if(!doc.classList.contains('show')) generateCert();
+  if(!doc.classList.contains('show')) return;
+  document.body.classList.add('print-cert');
+  setTimeout(()=>window.print(),80);
+}
+window.addEventListener('afterprint',()=>document.body.classList.remove('print-cert'));
+
+// date du jour par défaut
+(function(){const d=document.getElementById('cf-date');if(d)d.value=new Date().toISOString().slice(0,10);})();
+
+
+const links=[...document.querySelectorAll('.nav a')];
+const map={};links.forEach(a=>{const id=a.getAttribute('href').slice(1);if(id)map[id]=a;});
+const obs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(l=>l.classList.remove('active'));
+      const a=map[e.target.id]; if(a)a.classList.add('active');
+    }
+  });
+},{rootMargin:'-30% 0px -60% 0px'});
+['accueil','resume','tableau','t1','t2','arbre','t3','t4','t5','roadmap','certificat'].forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el);});
+
+links.forEach(a=>a.addEventListener('click',e=>{
+  const href=a.getAttribute('href');
+  if(href&&href.startsWith('#')){e.preventDefault();document.querySelector(href).scrollIntoView({behavior:'smooth'});}
+}));
+</script>
+</body>
+</html>
