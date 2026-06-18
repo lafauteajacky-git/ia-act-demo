@@ -1,0 +1,43 @@
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .sidebar,
+  .button,
+  .hero-actions,
+  .filter-grid,
+  #question-card,
+  #evidence-form,
+  #assessment-feedback {
+    display: none !important;
+  }
+
+  .main-shell {
+    padding: 0;
+  }
+
+  .view-section {
+    display: none !important;
+  }
+
+  .view-section[data-view="report"] {
+    display: block !important;
+  }
+
+  .panel-card,
+  .report-content {
+    box-shadow: none;
+    border: 0;
+    padding: 0;
+  }
+
+  .report-section,
+  .report-finding,
+  table,
+  tr,
+  td,
+  th {
+    break-inside: avoid;
+  }
+}

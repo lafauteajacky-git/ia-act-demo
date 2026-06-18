@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Démonstrateur DORA</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <p class="brand-kicker">Auria Advisory</p>
+        <h1 class="brand-title">DORA</h1>
+        <p class="brand-subtitle">Pilotage de la résilience opérationnelle numérique</p>
+      </div>
+
+      <nav class="side-nav" aria-label="Navigation principale">
+        <button class="nav-link is-active" type="button" data-route="executive">Vue exécutive</button>
+        <button class="nav-link" type="button" data-route="assessment">Évaluation DORA</button>
+        <button class="nav-link" type="button" data-route="requirements">Domaines et exigences</button>
+        <button class="nav-link" type="button" data-route="evidence">Preuves</button>
+        <button class="nav-link" type="button" data-route="findings">Findings</button>
+        <button class="nav-link" type="button" data-route="remediation">Plan de remédiation</button>
+        <button class="nav-link" type="button" data-route="report">Rapport</button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <p>Règlement (UE) 2022/2554</p>
+        <p><strong>DORA est applicable depuis le 17 janvier 2025.</strong></p>
+        <p class="small-note">Les données saisies dans cette démonstration sont conservées uniquement dans votre navigateur.</p>
+      </div>
+    </aside>
+
+    <main class="main-shell">
+      <section class="view-section is-active" data-view="executive">
+        <div class="hero-card">
+          <div class="hero-copy">
+            <p class="eyebrow">Résilience opérationnelle numérique des entités financières</p>
+            <h2>Évaluer l’effectivité du dispositif DORA et prioriser les actions de remédiation.</h2>
+            <p>
+              Ce diagnostic propose une lecture structurée des principaux dispositifs de résilience opérationnelle numérique :
+              gouvernance du risque TIC, gestion des incidents, maîtrise des prestataires TIC, programme de tests et capacité
+              à produire des éléments de preuve exploitables.
+            </p>
+            <p>
+              L’outil distingue la couverture du dispositif, la qualité de conception, l’effectivité opérationnelle,
+              la qualité des preuves et l’exposition résiduelle afin de structurer une restitution client honnête et explicable.
+            </p>
+            <div class="hero-actions">
+              <button class="button primary" type="button" data-route="assessment">Lancer l’évaluation</button>
+              <button class="button secondary" type="button" data-route="requirements">Explorer les exigences</button>
+            </div>
+          </div>
+
+          <div class="hero-panel">
+            <span class="chip">Applicable depuis le 17 janvier 2025</span>
+            <h3>Une analyse orientée décision</h3>
+            <ul class="bullet-list">
+              <li>Évaluation structurée des principaux domaines DORA</li>
+              <li>Lecture distincte de la maturité, de l’effectivité et du niveau de preuve</li>
+              <li>Formalisation automatique des findings et des priorités de remédiation</li>
+              <li>Restitution exploitable pour les risques, la conformité, la résilience et l’audit interne</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="section-grid two-col">
+          <article class="panel-card">
+            <div class="card-head">
+              <div>
+                <p class="section-kicker">Cadre de l’évaluation</p>
+                <h3>Profil de l’organisation</h3>
+              </div>
+              <span id="evaluation-status-badge" class="status-pill">Brouillon</span>
+            </div>
+            <div id="organization-summary" class="empty-state">
+              Lancez ou chargez une évaluation pour visualiser le profil de l’organisation et le statut du parcours.
+            </div>
+          </article>
+
+          <article class="panel-card">
+            <div class="card-head">
+              <div>
+                <p class="section-kicker">Cockpit exécutif</p>
+                <h3>Indicateurs principaux</h3>
+              </div>
+            </div>
+            <div id="executive-metrics" class="empty-state">
+              Lancez ou chargez une évaluation pour visualiser les résultats.
+            </div>
+          </article>
+        </div>
+
+        <div class="section-grid two-col">
+          <article class="panel-card">
+            <div class="card-head">
+              <div>
+                <p class="section-kicker">Synthèse dirigeant</p>
+                <h3>Lecture déterministe des résultats</h3>
+              </div>
+            </div>
+            <div id="executive-summary" class="empty-state">
+              La synthèse dirigeant sera générée à partir des résultats de l’évaluation.
+            </div>
+          </article>
+
+          <article class="panel-card">
+            <div class="card-head">
+              <div>
+                <p class="section-kicker">Principales expositions</p>
+                <h3>Zones prioritaires</h3>
+              </div>
+            </div>
+            <div id="executive-exposures" class="empty-state">
+              Les principales expositions apparaîtront ici après calcul.
+            </div>
+          </article>
+        </div>
+
+        <div class="section-grid two-col">
+          <article class="panel-card">
+            <div class="card-head">
+              <div>
+                <p class="section-kicker">Heatmap des domaines</p>
+                <h3>Maturité, effectivité, preuve et exposition</h3>
+              </div>
+            </div>
+            <div id="heatmap-container" class="empty-state">
+              La heatmap des domaines sera disponible une fois l’évaluation renseignée.
+            </div>
+          </article>
+
+          <article class="panel-card">
+            <div class="card-head">
+              <div>
+                <p class="section-kicker">Points de maîtrise</p>
+                <h3>Dispositifs les mieux établis</h3>
+              </div>
+            </div>
+            <div id="executive-strengths" class="empty-state">
+              Les points de maîtrise ressortiront automatiquement selon les dimensions évaluées.
+            </div>
+          </article>
+        </div>
+
+        <article class="panel-card">
+          <div class="card-head">
+            <div>
+              <p class="section-kicker">Transparence méthodologique</p>
+              <h3>Comprendre le calcul</h3>
+            </div>
+          </div>
+          <details class="explainer">
+            <summary>Comprendre le calcul</summary>
+            <div id="calculation-explainer"></div>
+          </details>
+        </article>
+      </section>
+
+      <section class="view-section" data-view="assessment">
+        <div class="section-grid two-col">
+          <article class="panel-card">
+            <div class="card-head">
+              <div>
+                <p class="section-kicker">Cadrage</p>
+                <h3>Profil de l’organisation</h3>
+              </div>
+            </div>
+            <form id="organization-form" class="form-grid">
+              <label class="field" for="org-name">
+                <span>Nom de l’organisation</span>
+                <input id="org-name" name="org-name" type="text" placeholder="Ex. Banque Horizon">
+              </label>
+              <label class="field" for="org-entity-type">
+                <span>Type d’entité</span>
+                <select id="org-entity-type" name="org-entity-type"></select>
+              </label>
+              <label class="field" for="org-sector">
+                <span>Secteur</span>
+                <input id="org-sector" name="org-sector" type="text" placeholder="Services financiers">
+              </label>
+              <label class="field" for="org-size">
+                <span>Taille indicative</span>
+                <select id="org-size" name="org-size">
+                  <option value="non-renseignée">Non renseignée</option>
+                  <option value="petite">Petite</option>
+                  <option value="intermédiaire">Intermédiaire</option>
+                  <option value="grande">Grande</option>
+                </select>
+              </label>
+              <label class="field" for="org-group-structure">
+                <span>Organisation</span>
+                <select id="org-group-structure" name="org-group-structure">
+                  <option value="autonome">Autonome</option>
+                  <option value="groupe">Au sein d’un groupe</option>
+                </select>
+              </label>
+              <label class="field" for="org-geography">
+                <span>Périmètre géographique</span>
+                <input id="org-geography" name="org-geography" type="text" placeholder="France, UE, multi-pays">
+              </label>
+              <label class="field" for="org-critical-functions">
+                <span>Fonctions critiques ou importantes</span>
+                <select id="org-critical-functions" name="org-critical-functions">
+                  <option value="oui">Oui</option>
+                  <option value="non">Non</option>
+                </select>
+              </label>
+              <label class="field" for="org-initial-maturity">
+                <span>Niveau de maturité initial déclaré</span>
+                <select id="org-initial-maturity" name="org-initial-maturity">
+                  <option value="initial">Initial</option>
+                  <option value="intermédiaire">Intermédiaire</option>
+                  <option value="avancé">Avancé</option>
+                </select>
+              </label>
+              <label class="field field-full" for="org-objective">
+                <span>Objectif de l’évaluation</span>
+                <select id="org-objective" name="org-objective"></select>
+              </label>
+            </form>
+          </article>
+
+          <article class="panel-card">
+            <div class="card-head">
+              <div>
+                <p class="section-kicker">Scénarios et persistance</p>
+                <h3>Continuer ou réinitialiser</h3>
+              </div>
+            </div>
+            <div class="stack">
+              <label class="field" for="scenario-select">
+                <span>Scénario de démonstration</span>
+                <select id="scenario-select" name="scenario-select"></select>
+              </label>
+              <p id="scenario-description" class="support-text"></p>
+              <div class="button-row">
+                <button id="load-demo-scenario" class="button secondary" type="button">Charger le scénario de démonstration</button>
+                <button id="resume-evaluation" class="button tertiary" type="button">Reprendre mon évaluation</button>
+                <button id="reset-evaluation" class="button tertiary danger" type="button">Réinitialiser l’évaluation</button>
+              </div>
+              <div id="assessment-feedback" class="inline-feedback" aria-live="polite"></div>
+              <p class="small-note">Les données saisies dans cette démonstration sont conservées uniquement dans votre navigateur.</p>
+            </div>
+          </article>
+        </div>
+
+        <article class="panel-card">
+          <div class="card-head">
+            <div>
+              <p class="section-kicker">Évaluation guidée</p>
+              <h3>Questionnaire expert par domaine</h3>
+            </div>
+            <div class="progress-meta">
+              <span id="question-counter">Question 1 / 36</span>
+              <span id="completion-label">0 % complété</span>
+            </div>
+          </div>
+          <div class="assessment-workspace">
+            <aside class="assessment-navigator">
+              <div class="stack">
+                <div>
+                  <p class="section-kicker">Parcours fluide</p>
+                  <h4>Choisir une exigence sans changer de page</h4>
+                  <p class="support-text">
+                    Sélectionnez un domaine, recherchez une exigence et ouvrez directement sa fiche d’évaluation.
+                  </p>
+                </div>
+                <div class="assessment-toolbar">
+                  <label class="field" for="assessment-domain-filter">
+                    <span>Domaine</span>
+                    <select id="assessment-domain-filter"></select>
+                  </label>
+                  <label class="field" for="assessment-search">
+                    <span>Recherche</span>
+                    <input id="assessment-search" type="search" placeholder="Exigence, identifiant, mot-clé">
+                  </label>
+                </div>
+                <div class="button-row">
+                  <button id="jump-next-pending" class="button secondary" type="button">Aller à la prochaine exigence à traiter</button>
+                </div>
+                <div id="assessment-queue-summary" class="inline-feedback" aria-live="polite"></div>
+              </div>
+              <div id="assessment-queue" class="assessment-queue" aria-label="Exigences du parcours"></div>
+            </aside>
+            <div class="assessment-detail">
+          <div class="progress-track" aria-hidden="true">
+            <div id="assessment-progress-bar" class="progress-bar"></div>
+          </div>
+              <div id="question-card"></div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="view-section" data-view="requirements">
+        <article class="panel-card">
+          <div class="card-head">
+            <div>
+              <p class="section-kicker">Grille réglementaire</p>
+              <h3>Domaines et exigences</h3>
+            </div>
+          </div>
+          <div class="filter-grid">
+            <label class="field" for="requirements-domain-filter">
+              <span>Domaine</span>
+              <select id="requirements-domain-filter"></select>
+            </label>
+            <label class="field" for="requirements-exposure-filter">
+              <span>Exposition</span>
+              <select id="requirements-exposure-filter">
+                <option value="all">Toutes</option>
+                <option value="critical">Critique</option>
+                <option value="high">Élevée</option>
+                <option value="moderate">Modérée</option>
+                <option value="controlled">Maîtrisée</option>
+              </select>
+            </label>
+            <label class="field" for="requirements-evidence-filter">
+              <span>Niveau de preuve</span>
+              <select id="requirements-evidence-filter">
+                <option value="all">Tous</option>
+                <option value="none">Absente</option>
+                <option value="declarative">Déclarative</option>
+                <option value="documented">Documentée</option>
+                <option value="verified">Vérifiée et récente</option>
+              </select>
+            </label>
+            <label class="field" for="requirements-criticality-filter">
+              <span>Criticité</span>
+              <select id="requirements-criticality-filter">
+                <option value="all">Toutes</option>
+                <option value="5">5</option>
+                <option value="4">4</option>
+                <option value="3">3</option>
+                <option value="2">2</option>
+                <option value="1">1</option>
+              </select>
+            </label>
+            <label class="field" for="requirements-status-filter">
+              <span>Statut d’évaluation</span>
+              <select id="requirements-status-filter">
+                <option value="all">Tous</option>
+                <option value="evaluated">Évaluées</option>
+                <option value="notAssessed">Non évaluées</option>
+                <option value="notApplicable">Non applicables</option>
+                <option value="withFinding">Avec finding</option>
+                <option value="withEvidence">Avec preuve</option>
+              </select>
+            </label>
+            <label class="field field-search" for="requirements-search">
+              <span>Recherche</span>
+              <input id="requirements-search" type="search" placeholder="Rechercher une exigence, un domaine, un identifiant">
+            </label>
+          </div>
+          <div id="requirements-table"></div>
+        </article>
+      </section>
+
+      <section class="view-section" data-view="evidence">
+        <article class="panel-card">
+          <div class="card-head">
+            <div>
+              <p class="section-kicker">Registre front-end</p>
+              <h3>Preuves</h3>
+            </div>
+          </div>
+          <p class="support-text">
+            Dans cette version de démonstration, seuls les métadonnées et rattachements sont conservés localement.
+          </p>
+          <div class="section-grid two-col">
+            <form id="evidence-form" class="stack">
+              <label class="field" for="evidence-title">
+                <span>Titre</span>
+                <input id="evidence-title" type="text" required>
+              </label>
+              <label class="field" for="evidence-type">
+                <span>Type de preuve</span>
+                <input id="evidence-type" type="text" placeholder="Politique, registre, compte rendu…">
+              </label>
+              <label class="field" for="evidence-owner">
+                <span>Owner</span>
+                <input id="evidence-owner" type="text">
+              </label>
+              <label class="field" for="evidence-date">
+                <span>Date du document</span>
+                <input id="evidence-date" type="date">
+              </label>
+              <label class="field" for="evidence-review-date">
+                <span>Date de revue</span>
+                <input id="evidence-review-date" type="date">
+              </label>
+              <label class="field" for="evidence-status">
+                <span>Statut</span>
+                <select id="evidence-status">
+                  <option value="declared">Déclarée</option>
+                  <option value="available">Disponible</option>
+                  <option value="review">À revoir</option>
+                  <option value="verified">Vérifiée</option>
+                  <option value="obsolete">Obsolète</option>
+                </select>
+              </label>
+              <label class="field field-full" for="evidence-related-requirements">
+                <span>Exigences associées</span>
+                <select id="evidence-related-requirements" multiple size="6"></select>
+              </label>
+              <label class="field field-full" for="evidence-description">
+                <span>Description</span>
+                <textarea id="evidence-description" rows="3"></textarea>
+              </label>
+              <label class="field field-full" for="evidence-file">
+                <span>Nom de fichier (session uniquement)</span>
+                <input id="evidence-file" type="file">
+              </label>
+              <button class="button primary" type="submit">Ajouter la preuve</button>
+            </form>
+
+            <div class="stack">
+              <div class="filter-grid compact">
+                <label class="field" for="evidence-status-filter">
+                  <span>Statut</span>
+                  <select id="evidence-status-filter">
+                    <option value="all">Tous</option>
+                    <option value="verified">Vérifiée</option>
+                    <option value="review">À revoir</option>
+                    <option value="obsolete">Obsolète</option>
+                    <option value="missing">Exigences sans preuve</option>
+                  </select>
+                </label>
+                <label class="field" for="evidence-search">
+                  <span>Recherche</span>
+                  <input id="evidence-search" type="search" placeholder="Titre, owner, exigence">
+                </label>
+              </div>
+              <div id="evidence-list"></div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="view-section" data-view="findings">
+        <article class="panel-card">
+          <div class="card-head">
+            <div>
+              <p class="section-kicker">Formalisation automatique</p>
+              <h3>Findings</h3>
+            </div>
+          </div>
+          <div class="filter-grid compact">
+            <label class="field" for="finding-severity-filter">
+              <span>Sévérité</span>
+              <select id="finding-severity-filter">
+                <option value="all">Toutes</option>
+                <option value="critical">Critique</option>
+                <option value="high">Élevée</option>
+                <option value="medium">Modérée</option>
+                <option value="low">Faible</option>
+              </select>
+            </label>
+            <label class="field" for="finding-domain-filter">
+              <span>Domaine</span>
+              <select id="finding-domain-filter"></select>
+            </label>
+            <label class="field" for="finding-status-filter">
+              <span>Statut</span>
+              <select id="finding-status-filter">
+                <option value="all">Tous</option>
+                <option value="open">Ouvert</option>
+                <option value="inProgress">En cours</option>
+                <option value="pending">En attente</option>
+                <option value="readyForReview">Prêt pour revue</option>
+                <option value="closed">Clos</option>
+              </select>
+            </label>
+          </div>
+          <div id="findings-list"></div>
+        </article>
+      </section>
+
+      <section class="view-section" data-view="remediation">
+        <article class="panel-card">
+          <div class="card-head">
+            <div>
+              <p class="section-kicker">Plan de remédiation priorisé</p>
+              <h3>Trajectoire de renforcement du dispositif</h3>
+            </div>
+          </div>
+          <p class="support-text">
+            Le plan d’action traduit les constats identifiés en mesures opérationnelles, organisées selon leur niveau de priorité
+            et leur horizon de mise en œuvre.
+          </p>
+          <div id="remediation-timeline"></div>
+          <div id="remediation-table"></div>
+        </article>
+      </section>
+
+      <section class="view-section" data-view="report">
+        <article class="panel-card">
+          <div class="card-head">
+            <div>
+              <p class="section-kicker">Restitution client</p>
+              <h3>Rapport</h3>
+            </div>
+            <button id="export-pdf" class="button primary" type="button">Exporter en PDF</button>
+          </div>
+          <div id="report-content" class="report-content">
+            Chargez ou réalisez une évaluation pour générer le rapport.
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

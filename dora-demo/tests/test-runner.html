@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tests DORA</title>
+  <style>
+    body { font-family: "Segoe UI", sans-serif; padding: 24px; background: #f7f3ee; color: #1e2430; }
+    .ok, .ko { padding: 14px 16px; border-radius: 14px; margin-bottom: 10px; }
+    .ok { background: #dcefe8; color: #1e5a4e; }
+    .ko { background: #f9d6c8; color: #9a3d1d; }
+  </style>
+</head>
+<body>
+  <h1>Tests du démonstrateur DORA</h1>
+  <div id="results"></div>
+  <script type="module">
+    import { runSuite } from "./test-suite.js";
+    const results = runSuite();
+    const host = document.getElementById("results");
+    host.innerHTML = results.map((result) => `
+      <div class="${result.ok ? "ok" : "ko"}">
+        <strong>${result.ok ? "Succès" : "Échec"}</strong> — ${result.name}
+        ${result.ok ? "" : `<div>${result.error}</div>`}
+      </div>
+    `).join("");
+  </script>
+</body>
+</html>
