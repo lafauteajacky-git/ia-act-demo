@@ -53,8 +53,8 @@
   .app{display:flex;min-height:100vh}
   .sidebar{
     width:248px;flex:0 0 248px;
-    background:var(--bg-soft);
-    border-right:1px solid var(--line);
+    background:#2C3446;
+    border-right:1px solid rgba(255,255,255,.12);
     padding:22px 18px;
     position:sticky;top:0;height:100vh;
     overflow-y:auto;
@@ -71,22 +71,22 @@
     background-repeat:no-repeat;background-position:left center;background-size:142px auto;
     text-indent:-9999px;overflow:hidden;white-space:nowrap;
   }
-  .brand .brand-title{font-family:var(--display);font-size:21px;font-weight:600;color:var(--ink);line-height:1.05;margin-top:7px}
-  .brand .brand-sub{font-size:10.5px;color:var(--muted);letter-spacing:.04em;margin-top:4px}
+  .brand .brand-title{font-family:var(--display);font-size:21px;font-weight:600;color:#FFFFFF;line-height:1.05;margin-top:7px}
+  .brand .brand-sub{font-size:10.5px;color:rgba(255,255,255,.72);letter-spacing:.04em;margin-top:4px}
   .nav-group{margin-bottom:18px}
-  .nav-label{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 8px 8px}
+  .nav-label{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.58);font-weight:700;margin:0 0 8px 8px}
   .nav a{
     display:flex;align-items:center;gap:9px;
     padding:7px 10px;border-radius:8px;border-left:2px solid transparent;
-    color:var(--ink);text-decoration:none;font-size:13.5px;cursor:pointer;
+    color:rgba(255,255,255,.92);text-decoration:none;font-size:13.5px;cursor:pointer;
     transition:background .12s,color .12s,border-color .12s;
   }
-  .nav a:hover{background:#fff}
+  .nav a:hover{background:rgba(255,255,255,.08);color:#fff}
   .nav a.active{background:#fff;color:var(--primary-dk);font-weight:600;border-left-color:var(--gold);box-shadow:var(--shadow)}
-  .nav a .ico{width:16px;text-align:center;opacity:.85}
-  .side-foot{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
-  .side-foot b{color:var(--ink-2);font-weight:600}
-  .side-foot .tagline{font-family:var(--serif);font-style:italic;color:var(--gold-dk);margin-bottom:7px;font-size:12px}
+  .nav a .ico{width:16px;text-align:center;opacity:.92}
+  .side-foot{margin-top:26px;padding-top:16px;border-top:1px solid rgba(255,255,255,.12);font-size:11px;color:rgba(255,255,255,.68)}
+  .side-foot b{color:#FFFFFF;font-weight:600}
+  .side-foot .tagline{font-family:var(--serif);font-style:italic;color:#F3B18C;margin-bottom:7px;font-size:12px}
 
   /* ---------- Generic blocks ---------- */
   .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
