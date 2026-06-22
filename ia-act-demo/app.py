@@ -14,9 +14,32 @@ st.set_page_config(
 BASE_DIR = Path(__file__).resolve().parent
 HTML_FILE = BASE_DIR / "index.html"
 
-
-st.title("Demo IA Act")
-st.caption("Version Streamlit de la page HTML de démonstration.")
+st.markdown(
+    """
+    <style>
+    .stApp {
+        margin: 0;
+    }
+    .block-container {
+        padding: 0;
+        max-width: none;
+    }
+    header[data-testid="stHeader"] {
+        display: none;
+    }
+    div[data-testid="stToolbar"] {
+        display: none;
+    }
+    div[data-testid="stDecoration"] {
+        display: none;
+    }
+    div[data-testid="stStatusWidget"] {
+        display: none;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 if not HTML_FILE.exists():
     st.error(f"Fichier introuvable : {HTML_FILE}")
@@ -25,4 +48,3 @@ if not HTML_FILE.exists():
 html = HTML_FILE.read_text(encoding="utf-8", errors="replace")
 
 components.html(html, height=2200, scrolling=True)
-
